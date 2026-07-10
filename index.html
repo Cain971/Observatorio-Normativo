@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observatorio Normativo — Congreso del Perú (1990–presente)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F3; --panel:#FFFFFF; --ink:#1B2330; --ink-2:#4A5568; --line:#D8DCD6;
+  --sello:#A6191E;
+  --dem:#2F5D8C; --seg:#8C2F39; --reg:#5B5EA6; --edu:#2E6B4F; --jus:#7A5210;
+  --ok:#1E7A46; --warn:#9A6708; --miss:#8A8F98;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --disp:'Archivo',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+a{color:var(--dem)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--dem);outline-offset:2px}
+
+header{border-bottom:3px double var(--ink);background:var(--panel)}
+.h-wrap{max-width:1180px;margin:0 auto;padding:26px 22px 18px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sello)}
+h1{font-family:var(--disp);font-variation-settings:'wdth' 112;font-weight:800;font-size:clamp(24px,3.6vw,40px);line-height:1.05;margin:.35em 0 .3em}
+.sub{color:var(--ink-2);max-width:80ch}
+.h-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.h-meta span{font-family:var(--mono);font-size:11px;border:1px solid var(--line);padding:3px 8px;background:var(--paper)}
+
+.periods{max-width:1180px;margin:18px auto 0;padding:0 22px}
+.p-track{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink)}
+.p-cell{padding:10px 12px;border-right:1px solid var(--line);cursor:pointer;background:var(--panel);transition:background .15s}
+.p-cell:last-child{border-right:0}
+.p-cell:hover{background:#EEF1EC}
+.p-cell.active{background:var(--ink);color:#fff}
+.p-cell.active .p-org{color:#D9DEE8}
+.p-yrs{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em}
+.p-org{font-size:12px;color:var(--ink-2);margin-top:2px;line-height:1.3}
+.p-note{font-family:var(--mono);font-size:10.5px;color:var(--warn);margin-top:8px}
+
+.wrap{max-width:1180px;margin:22px auto 80px;padding:0 22px;display:grid;grid-template-columns:290px 1fr;gap:26px;align-items:start}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}.p-track{grid-template-columns:1fr 1fr}}
+
+aside{position:sticky;top:14px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 28px);overflow:auto}
+@media(max-width:900px){aside{position:static;max-height:none}}
+.box{background:var(--panel);border:1px solid var(--line);padding:16px}
+.box h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.search{width:100%;padding:9px 11px;border:1px solid var(--ink);font-family:var(--sans);font-size:14px;background:var(--paper)}
+.fgroup{margin-top:12px}
+.fgroup label.t{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:11px;padding:4px 9px;border:1px solid var(--line);background:var(--paper);cursor:pointer;user-select:none}
+.chip.on{color:#fff;border-color:transparent}
+.chip[data-k="dem"].on{background:var(--dem)} .chip[data-k="seg"].on{background:var(--seg)}
+.chip[data-k="reg"].on{background:var(--reg)} .chip[data-k="edu"].on{background:var(--edu)}
+.chip[data-k="jus"].on{background:var(--jus)}
+.chip.on.neutral{background:var(--ink)}
+select{width:100%;padding:8px;border:1px solid var(--line);background:var(--paper);font-family:var(--sans);font-size:13.5px}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:12px}
+.reset{margin-top:10px;width:100%;padding:8px;background:none;border:1px solid var(--ink);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.reset:hover{background:var(--ink);color:#fff}
+.srcs a{display:block;font-size:13px;padding:6px 0;border-bottom:1px dotted var(--line);text-decoration:none}
+.srcs a:hover{text-decoration:underline}
+.srcs .n{font-family:var(--mono);font-size:10.5px;color:var(--ink-2);display:block}
+
+details.method{background:var(--panel);border:1px solid var(--line);margin-bottom:14px}
+details.method>summary{cursor:pointer;padding:13px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.method>summary::after{content:'+'}
+details.method[open]>summary::after{content:'–'}
+details.method .body{padding:0 16px 16px;font-size:13.5px;color:var(--ink-2)}
+details.method .body strong{color:var(--ink)}
+details.method .body ul{padding-left:18px;margin:8px 0}
+details.method .body li{margin:5px 0}
+details.method .body a{color:var(--dem)}
+
+.ficha{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--ink);margin-bottom:16px}
+.ficha[data-dir="debilita"]{border-left-color:var(--sello)}
+.ficha[data-dir="fortalece"]{border-left-color:var(--ok)}
+.ficha[data-dir="ambiguo"]{border-left-color:var(--warn)}
+.f-head{padding:16px 18px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:14px}
+.f-head:hover{background:#FBFBF9}
+.f-num{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em}
+.f-num .tipo{color:var(--ink-2);font-weight:400}
+.f-title{font-family:var(--disp);font-variation-settings:'wdth' 105;font-weight:700;font-size:17.5px;line-height:1.25;margin:4px 0 8px}
+.f-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2.5px 7px;color:#fff}
+.tag.dem{background:var(--dem)}.tag.seg{background:var(--seg)}.tag.reg{background:var(--reg)}.tag.edu{background:var(--edu)}.tag.jus{background:var(--jus)}
+.tag.dir-d{background:none;color:var(--sello);border:1px solid var(--sello)}
+.tag.dir-f{background:none;color:var(--ok);border:1px solid var(--ok)}
+.tag.dir-a{background:none;color:var(--warn);border:1px solid var(--warn)}
+.tag.const{background:var(--ink);letter-spacing:.03em}
+.f-date{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);text-align:right;white-space:nowrap}
+.f-date b{display:block;color:var(--ink);font-size:13px}
+.f-toggle{font-family:var(--mono);font-size:18px;color:var(--ink-2)}
+
+.f-body{display:none;border-top:1px solid var(--line);padding:18px}
+.ficha.open .f-body{display:block}
+.frow{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:9px 0;border-bottom:1px dotted var(--line);font-size:13.5px}
+.frow:last-of-type{border-bottom:0}
+.frow .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding-top:2px}
+@media(max-width:640px){.frow{grid-template-columns:1fr}.frow .k{padding-top:0}}
+.frow ul{padding-left:16px}.frow li{margin:4px 0}
+
+.sello{display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.09em;padding:2px 7px;border:1.4px solid currentColor;text-transform:uppercase;vertical-align:middle;margin-right:6px;background:rgba(255,255,255,.6)}
+.sello.hecho{color:var(--ok)}
+.sello.infer{color:var(--dem)}
+.sello.interp{color:var(--warn)}
+.sello.falta{color:var(--miss);border-style:dashed}
+.sello.pend{color:var(--sello);border-style:dashed;transform:rotate(-1.2deg)}
+
+.crit{background:var(--paper);border:1px solid var(--line);padding:10px 12px;margin:6px 0;font-size:13px}
+.crit .c-name{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.analisis-item{border-left:3px solid var(--line);padding:8px 12px;margin:8px 0;font-size:13px}
+.analisis-item .who{font-family:var(--mono);font-size:11px;font-weight:600}
+.tc-block{background:#F2F4F8;border:1px solid #CFD8E6;padding:10px 12px;font-size:13px}
+.f-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.f-links a{font-family:var(--mono);font-size:11px;text-decoration:none;border:1px solid var(--dem);padding:4px 9px;color:var(--dem)}
+.f-links a:hover{background:var(--dem);color:#fff}
+.interp-block{background:#FCF8EF;border:1px solid #E8DCBE;padding:12px 14px;margin-top:14px;font-size:13.5px}
+.empty{padding:60px 20px;text-align:center;color:var(--ink-2);font-family:var(--mono);font-size:13px;background:var(--panel);border:1px dashed var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px;font-size:12px;color:var(--ink-2);align-items:center}
+footer{max-width:1180px;margin:0 auto;padding:0 22px 60px;font-size:12px;color:var(--ink-2);font-family:var(--mono)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-wrap">
+    <div class="kicker">Instrumento de análisis legislativo · v5 · cuatro ejes operativos (seguridad, electoral, justicia, educación)</div>
+    <h1>Observatorio Normativo — Congreso de la República del Perú</h1>
+    <p class="sub">Explorador de normas con rango de ley (jul. 1990 – presente) con impacto en democracia, seguridad, justicia, reguladores y educación. Cada campo separa <span class="sello hecho">Hecho verificado</span> <span class="sello infer">Inferencia</span> <span class="sello interp">Interpretación</span> y declara lo <span class="sello falta">No disponible</span> o <span class="sello pend">Por verificar</span>. Incluye alcance constitucional y control constitucional (TC / Corte Suprema / Corte IDH) por norma.</p>
+    <div class="h-meta">
+      <span>26 fichas · ejes seguridad, electoral, justicia y educación</span>
+      <span>Votaciones por bancada: fuente periodística/de investigación, pendiente acta SIL</span>
+      <span>Actualizado: 09-jul-2026</span>
+    </div>
+  </div>
+  <div class="periods">
+    <div class="p-track" id="pTrack">
+      <div class="p-cell" data-p="1990-1992" role="button" tabindex="0"><div class="p-yrs">jul 1990 – abr 1992</div><div class="p-org">Congreso bicameral · Const. 1979</div></div>
+      <div class="p-cell" data-p="1992" role="button" tabindex="0"><div class="p-yrs">abr – nov 1992</div><div class="p-org">Gobierno de facto · Decretos Leyes (sin Congreso)</div></div>
+      <div class="p-cell" data-p="1992-1995" role="button" tabindex="0"><div class="p-yrs">nov 1992 – jul 1995</div><div class="p-org">CCD · constituyente + legislativo</div></div>
+      <div class="p-cell" data-p="1995-" role="button" tabindex="0"><div class="p-yrs">1995 – presente</div><div class="p-org">Congresos ordinarios · Const. 1993 (bicameral desde jul. 2026)</div></div>
+    </div>
+    <div class="p-note">⚠ Votación nominal digitalizada de forma sólida recién desde ~2001-2006. Para normas anteriores este instrumento nunca infiere votos desde la afiliación partidaria.</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="box">
+      <h3>Filtros</h3>
+      <input class="search" id="q" type="search" placeholder="Buscar norma, número, tema…" aria-label="Buscar">
+      <div class="fgroup">
+        <label class="t">Eje temático</label>
+        <div class="chips" id="temaChips">
+          <span class="chip" data-k="seg" role="button" tabindex="0">Seguridad / penal</span>
+          <span class="chip" data-k="dem" role="button" tabindex="0">Democracia / electoral</span>
+          <span class="chip" data-k="jus" role="button" tabindex="0">Justicia</span>
+          <span class="chip" data-k="reg" role="button" tabindex="0">Reguladores</span>
+          <span class="chip" data-k="edu" role="button" tabindex="0">Educación</span>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="t">Alcance constitucional</label>
+        <div class="chips" id="constChips">
+          <span class="chip neutral" data-c="reforma" role="button" tabindex="0">Reforma constitucional formal</span>
+          <span class="chip neutral" data-c="incidencia" role="button" tabindex="0">Ley con incidencia constitucional</span>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="t">Bancadas con voto a favor registrado</label>
+        <div class="chips" id="bancadaChips">
+          <span class="chip neutral" data-b="FP" role="button" tabindex="0">Fuerza Popular</span>
+          <span class="chip neutral" data-b="PL" role="button" tabindex="0">Perú Libre</span>
+          <span class="chip neutral" data-b="APP" role="button" tabindex="0">APP</span>
+          <span class="chip neutral" data-b="RP" role="button" tabindex="0">Renovación Popular</span>
+          <span class="chip neutral" data-b="AP" role="button" tabindex="0">Acción Popular</span>
+          <span class="chip neutral" data-b="POD" role="button" tabindex="0">Podemos Perú</span>
+          <span class="chip neutral" data-b="SP" role="button" tabindex="0">Somos Perú</span>
+          <span class="chip neutral" data-b="AVP" role="button" tabindex="0">Avanza País</span>
+          <span class="chip neutral" data-b="BM" role="button" tabindex="0">Bloque Magisterial</span>
+          <span class="chip neutral" data-b="HyD" role="button" tabindex="0">Honor y Democracia</span>
+          <span class="chip neutral" data-b="PB" role="button" tabindex="0">Perú Bicentenario</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--warn);margin-top:7px;line-height:1.45">⚠ Filtra solo fichas con voto favorable de la bancada registrado en las fuentes citadas (prensa/investigación; pendiente de acta nominal SIL). Las normas sin desagregado por bancada — incluidas todas las pre-2001 — no aparecen al filtrar. Los casos con discrepancia entre fuentes (p. ej. FP en la 1.ª votación de la Ley 32108) se excluyen del filtro y se explican en la ficha.</div>
+      </div>
+      <div class="fgroup">
+        <label class="t">Sentido del cambio <span class="sello interp" style="font-size:8.5px">Interpretación</span></label>
+        <div class="chips" id="dirChips">
+          <span class="chip neutral" data-d="debilita" role="button" tabindex="0">Debilita institución</span>
+          <span class="chip neutral" data-d="fortalece" role="button" tabindex="0">Fortalece institución</span>
+          <span class="chip neutral" data-d="ambiguo" role="button" tabindex="0">Ambiguo / en disputa</span>
+        </div>
+      </div>
+      <div class="fgroup">
+        <label class="t" for="tipoSel">Tipo de norma</label>
+        <select id="tipoSel">
+          <option value="">Todos los tipos</option>
+          <option>Ley ordinaria</option>
+          <option>Ley de reforma constitucional</option>
+          <option>Decreto ley (gob. de facto)</option>
+          <option>Decreto legislativo</option>
+        </select>
+      </div>
+      <div class="count" id="count"></div>
+      <button class="reset" id="reset">Limpiar filtros</button>
+    </div>
+
+    <div class="box srcs">
+      <h3>Fuentes primarias</h3>
+      <a href="https://busquedas.elperuano.pe/" target="_blank" rel="noopener">Diario Oficial El Peruano <span class="n">texto oficial publicado — 1.ª autoridad</span></a>
+      <a href="https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search" target="_blank" rel="noopener">SIL — Expediente virtual <span class="n">trámite, autores, dictámenes, votación nominal</span></a>
+      <a href="https://spij.minjus.gob.pe/spij-ext-web/#/inicio" target="_blank" rel="noopener">SPIJ — MINJUSDH <span class="n">texto actualizado, modificatorias, derogatorias</span></a>
+      <a href="https://leyes.congreso.gob.pe/" target="_blank" rel="noopener">Archivo Digital de la Legislación <span class="n">leyes 1904–presente, PDFs oficiales</span></a>
+      <a href="https://www.tc.gob.pe/jurisprudencia/" target="_blank" rel="noopener">Tribunal Constitucional <span class="n">sentencias de inconstitucionalidad</span></a>
+      <a href="https://www.corteidh.or.cr/" target="_blank" rel="noopener">Corte IDH <span class="n">sentencias y medidas provisionales</span></a>
+      <a href="https://www.congreso.gob.pe/DiarioDebates/" target="_blank" rel="noopener">Diario de los Debates <span class="n">transcripción oficial de sesiones del Pleno (PDF)</span></a>
+      <a href="https://www.congreso.gob.pe/AsistenciasVotacionesPleno/" target="_blank" rel="noopener">Asistencias y votaciones del Pleno <span class="n">actas nominales por sesión — árbitro de los desagregados</span></a>
+    </div>
+  </aside>
+
+  <main>
+    <details class="method">
+      <summary>Criterios operacionales de clasificación (sección 5 del proyecto)</summary>
+      <div class="body">
+        <p>Ninguna etiqueta se asigna ad hoc. Cada clasificación cita la <strong>disposición concreta</strong> que cumple el criterio. Criterios de partida (ajustables):</p>
+        <ul>
+          <li><strong>Debilitamiento de regulador:</strong> reducción de autonomía; flexibilización de requisitos de idoneidad de autoridades; recorte de competencias sancionadoras/fiscalizadoras; cambios en remoción que reducen independencia.</li>
+          <li><strong>Política criminal con efecto de impunidad:</strong> reducción de penas; elevación de umbrales de persecución; recorte de plazos o herramientas procesales; debilitamiento de capacidades de investigación (Fiscalía, PNP) o de la independencia de quienes investigan.</li>
+          <li><strong>Debilitamiento del sistema electoral / control democrático:</strong> cambios en fiscalización de financiamiento, facultades de JNE/ONPE, mecanismos de control entre poderes o de participación ciudadana.</li>
+        </ul>
+        <p>El <strong>efecto jurídico directo</strong> (texto) se distingue siempre del <strong>efecto esperado u observado</strong> (requiere evidencia empírica citada aparte). "Alcance constitucional" distingue la <strong>reforma constitucional formal</strong> (vía art. 206) de la <strong>ley ordinaria con incidencia constitucional directa</strong> (interpreta, desarrolla o colisiona con normas de rango constitucional, incluidos tratados de DD.HH.).</p>
+      </div>
+    </details>
+
+    <details class="method">
+      <summary>Estado del eje seguridad / justicia penal (síntesis 2023–2025)</summary>
+      <div class="body">
+        <p><span class="sello hecho">Hecho verificado</span> Entre mayo de 2023 y agosto de 2025 el Congreso 2021–2026 aprobó un conjunto de leyes penales y procesales que el Ministerio Público (gestión Espinoza, 2025) y análisis de <a href="https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan" target="_blank" rel="noopener">Convoca</a> e <a href="https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/" target="_blank" rel="noopener">IDL-Reporteros</a> agrupan como restrictivas de la persecución penal: 31751 (prescripción), 31990 (colaboración eficaz), 32107 (lesa humanidad), 32108/32138 (crimen organizado), 32130 (investigación policial), 32181 (detención preliminar), 32182 (sanciones a jueces y fiscales) y 32419 (amnistía). La denominación "leyes pro-crimen" es una <strong>categoría de actores del debate</strong> (gremios, Fiscalía, prensa), que este instrumento registra como tal; la clasificación propia se hace criterio por criterio en cada ficha.</p>
+        <p><span class="sello hecho">Hecho verificado</span> Panorama de control: el TC declaró constitucional la Ley 32107 (4–3, dic. 2025); la Corte Suprema aplicó la Ley 32108 (Casación 2637-2023) mientras jueces de primera instancia la inaplicaron por control difuso/convencionalidad; la Corte IDH dictó medidas provisionales contra el trámite de la Ley 32419, promulgada pese a ello. <span class="sello pend">Por verificar</span> Reacciones de prensa (mar. 2026) indican que el TC habría convalidado también otras leyes del paquete; expedientes y sentido exacto por confirmar en tc.gob.pe.</p>
+        <p><span class="sello interp">Interpretación</span> Contexto para el seguimiento 2026–2031: varias de estas normas fueron respaldadas por bancadas que integran o son afines al nuevo oficialismo (Fuerza Popular ganó la presidencia en la segunda vuelta del 07/06/2026, proclamada el 03/07/2026). El eje permite monitorear si el nuevo gobierno y el Congreso bicameral las mantienen, profundizan o corrigen.</p>
+      </div>
+    </details>
+
+    <details class="method">
+      <summary>Estado del eje electoral / reglas del juego 2026 (síntesis 2023–2025)</summary>
+      <div class="body">
+        <p><span class="sello hecho">Hecho verificado</span> Entre noviembre de 2023 y enero de 2025 el Congreso 2021–2026 redefinió las reglas bajo las que se eligió al gobierno y al Congreso bicameral de 2026: Ley 31988 (reforma constitucional de bicameralidad y reelección parlamentaria, aprobada sin referéndum pese al resultado del referéndum de 2018), Ley 31981 (régimen de elecciones primarias), Ley 32054 (exclusión de los partidos de la responsabilidad penal como personas jurídicas), Ley 32058 (cronograma, plazos de afiliación y supresión de la causal de suspensión por comités partidarios, cuestionada por el JNE) y Ley 32245 (adecuación de la normativa electoral al Congreso bicameral).</p>
+        <p><span class="sello interp">Interpretación</span> El rasgo estructural del eje es que las reglas fueron fijadas por los propios competidores que participaron en 2026, varios de ellos con investigaciones penales en curso como organizaciones (Fuerza Popular, Perú Libre, Podemos, Renovación Popular, según los procesos citados por la prensa en cada ficha). La evaluación de cada norma se hace criterio por criterio; el patrón agregado es materia de análisis, no un hecho.</p>
+        <p><span class="sello hecho">Hecho verificado</span> Contexto de aplicación: las elecciones generales del 12/04/2026 y la segunda vuelta del 07/06/2026 se realizaron bajo este marco; hubo denuncias de fraude de Renovación Popular tras la primera vuelta, la renuncia del jefe de la ONPE (P. Corvetto), quien se allanó a investigaciones señalando que no existían indicios de fraude, y la proclamación del JNE el 03/07/2026 (Wikipedia con fuentes; verificar detalles en resoluciones del JNE). El desempeño de JNE/ONPE bajo presión es insumo del eje, no materia normativa.</p>
+      </div>
+    </details>
+
+    <details class="method">
+      <summary>Estado del eje justicia (síntesis 2019–2026)</summary>
+      <div class="body">
+        <p><span class="sello hecho">Hecho verificado</span> Línea de base: la reforma de 2019 (Ley 30904, reforma constitucional; Ley 30916, orgánica) reemplazó al CNM por la JNJ tras el escándalo de los "Cuellos Blancos", con selección por concurso público de méritos. Desde 2023 el Congreso intervino sobre ese diseño por tres vías: inhabilitación de miembros (Inés Tello y Aldo Vásquez, mar. 2024, tras la inhabilitación de la exfiscal Zoraida Ávalos en 2023), flexibilización legal del ingreso de suplentes (modificatoria de la LOJNJ, may. 2024, a iniciativa del Defensor del Pueblo J. Gutiérrez), y leyes que presionan al operador judicial (Ley 32182: sanciones a jueces y fiscales por sus decisiones cautelares).</p>
+        <p><span class="sello hecho">Hecho verificado</span> Panorama del TC (composición elegida por el Congreso en 2022, según el análisis de votaciones de IDL): liberación de A. Fujimori (dic. 2023), anulación de la investigación a A. Oré en el caso Cocteles (ago. 2024), nulidad del proceso disciplinario inmediato de la JNJ con reposición de magistrados vinculados a Cuellos Blancos (mar. 2025), sentencia que limita la retroactividad de la extinción de dominio (2025), liberación de D. Urresti por aplicación de la Ley 32107 (feb. 2026) y demandas infundadas contra las Leyes 32107 y 31751. Cada resolución consta en la ficha de la norma correspondiente o en la fuente citada.</p>
+        <p><span class="sello pend">Por verificar</span> En trámite: el PL 10585/2024-CR (A. Gonza, Perú Libre) — aprobado en la Comisión de Justicia el 28/11/2025 con 10 votos de Fuerza Popular, Perú Libre y APP contra 6 — daría a la JNJ la designación de jueces supernumerarios y fiscales provisionales y recortaría el mandato del Fiscal de la Nación de 3+2 a 2+2 años. Verificar si fue aprobado por el Pleno y publicado. Contexto adicional citado por prensa: conflicto de 2025 en torno a la titularidad de la Fiscalía de la Nación (reposición de P. Benavides ordenada por la JNJ y situación de D. Espinoza, con pronunciamiento de la relatoría especial de la ONU) — hechos institucionales por documentar con resoluciones antes de fichar.</p>
+        <p><span class="sello interp">Interpretación</span> El patrón del eje: la disputa ya no es principalmente por el texto de las leyes orgánicas sino por quién ocupa los órganos (JNJ, TC, Defensoría, Fiscalía) que aplican y controlan las demás normas del observatorio. Es el eje que condiciona la eficacia real de los otros tres bajo el gobierno 2026–2031.</p>
+      </div>
+    </details>
+
+    <details class="method">
+      <summary>Estado del eje educación (síntesis 2014–2026)</summary>
+      <div class="body">
+        <p><span class="sello hecho">Hecho verificado</span> El eje tiene tres fases documentadas: (1) la reforma de 2014 (Ley 30220: SUNEDU, licenciamiento obligatorio, creación de universidades públicas condicionada a factibilidad); (2) la contrarreforma de gobernanza de 2022 (Ley 31520: representantes de los regulados en el Consejo Directivo de la SUNEDU); y (3) la expansión legislativa de la oferta 2024–2026: el Congreso aprobó la creación de 20 universidades nacionales en 15 departamentos pese a la observación del Ejecutivo (ficha propia), y según Gestión (jun. 2026) en 2025 se crearon por ley al menos 40 universidades públicas y en lo que va de 2026 otras 16, además de leyes declarativas de interés nacional (p. ej. Ley 32126, U.N. de Talara, autora H. Juárez, Podemos; Ley 32620, ocho universidades en Loreto, Junín, Ucayali y Cusco) y tres leyes publicadas el 06/06/2026 que crean nueve universidades y ocho institutos tecnológicos.</p>
+        <p><span class="sello interp">Interpretación</span> El patrón del eje replica al de justicia por otra vía: la reforma de 2014 no se derogó, se vació por dos flancos — quién controla al regulador (31520) y cuánta oferta se crea por ley al margen de la evaluación de factibilidad que el propio sistema exige. La pregunta empírica de seguimiento 2026–2031 es si el licenciamiento de las universidades creadas por ley opera como filtro real o como formalidad bajo la SUNEDU recompuesta.</p>
+        <p><span class="sello pend">Por verificar</span> Subeje de contenidos y educación básica (p. ej. la Ley 31498 sobre materiales y recursos educativos, de 2022, citada en el debate sobre currículo): texto, fecha y trámite por verificar antes de fichar. También pendiente: número de ley y fecha de publicación de la norma que crea las 20 universidades, y las votaciones desagregadas del eje.</p>
+      </div>
+    </details>
+
+    <details class="method">
+      <summary>Bitácora de verificación (protocolo §9) — 09-jul-2026</summary>
+      <div class="body">
+        <p><strong>Resuelto en esta pasada:</strong> Ley 31990 (número, fecha 21/03/2024, disposiciones e iter legislativo completos, vía texto oficial y boletines jurídicos); TC sobre Ley 31355 (Exp. 00032-2021-PI/TC, infundada 4-2 el 03/02/2022, sentencia enlazada); cifra oficial de la Ley 32138 (81-23-8, nota del Congreso — resuelta la discrepancia con LP que reportó 70) y de la primera votación de la Ley 32182 (86-20-2, PL 8507 y 8959); reforma bicameral confirmada como Ley 31988 (20/03/2024, 93 y 91 votos); Leyes 32054 y 32058 verificadas en texto oficial. Se identificó además la ruta oficial de las actas: los desagregados nominales están en los PDF de "Asistencia y Votación" y en el Diario de los Debates (enlaces en la columna de fuentes).</p>
+        <p><strong>Pendiente declarado (no se completa con estimaciones):</strong> actas nominales individuales de todas las votaciones citadas (las cifras por bancada siguen siendo de fuente periodística hasta contrastar el PDF de la sesión respectiva); número y fecha de la modificatoria de la LOJNJ de may. 2024; expediente del fallo del TC sobre la Ley 31399; expediente y sentido exacto del pronunciamiento del TC sobre la Ley 32108 (referido por prensa de mar. 2026); texto y fecha de la Ley 31981; autoría formal de la Ley 32419 (fuentes discrepan entre J. Montoya y F. Rospigliosi); fechas exactas de publicación de las normas pre-2019 marcadas "por confirmar"; y la totalidad de votaciones pre-2001, que requieren diarios de debates no digitalizados o carga de documentos por el usuario.</p>
+      </div>
+    </details>
+
+    <div class="legend">
+      <span><span class="sello hecho">Hecho verificado</span> con fuente primaria o cita directa</span>
+      <span><span class="sello pend">Por verificar</span> dato de fuente secundaria; confirmar en SIL/El Peruano/TC</span>
+      <span><span class="sello falta">No disponible</span> registro no digitalizado (protocolo sección 2)</span>
+    </div>
+
+    <div id="list"></div>
+    <div class="empty" id="empty" style="display:none">Ninguna norma coincide con los filtros. Ajusta los criterios o limpia la búsqueda.</div>
+  </main>
+</div>
+
+<footer>
+  Instrumento de trabajo — base curada, no inventario exhaustivo. Las clasificaciones marcadas [INTERPRETACIÓN] siguen los criterios de la sección 5 y no son hechos objetivos. Las votaciones por bancada provienen de prensa e investigación periodística citada y deben confirmarse en el acta nominal del SIL antes de atribuir votos individuales.
+</footer>
+
+<script>
+const T = {dem:'Democracia / electoral', seg:'Seguridad / penal', reg:'Reguladores', edu:'Educación', jus:'Justicia'};
+const P = {FP:'Fuerza Popular', PL:'Perú Libre', APP:'APP', RP:'Renovación Popular', AP:'Acción Popular', POD:'Podemos Perú', SP:'Somos Perú', AVP:'Avanza País', BM:'Bloque Magisterial', HyD:'Honor y Democracia', PB:'Perú Bicentenario'};
+
+const DB = [
+{
+ id:'dl25475', numero:'Decreto Ley N.º 25475', tipo:'Decreto ley (gob. de facto)', periodo:'1992',
+ nombre:'Penalidad para los delitos de terrorismo y los procedimientos para la investigación, la instrucción y el juicio',
+ fecha:'06/05/1992', fechaS:'hecho', temas:['seg'], dir:'ambiguo', constit:null,
+ periodoTxt:'Gobierno de Emergencia y Reconstrucción Nacional (abr–nov 1992) — poder ejecutivo de facto, sin Congreso',
+ sumilla:'Tipifica el delito de terrorismo, endurece penas (incluida cadena perpetua para cabecillas), crea procedimientos especiales con jueces "sin rostro" y restringe garantías procesales.',
+ estado:'Vigente con modificaciones sustanciales; el marco fue reconfigurado por los Decretos Legislativos 921–927 (2003) tras la sentencia del TC.',
+ articulos:['Art. 2: tipo base de terrorismo (pena no menor de 20 años).','Art. 3: cadena perpetua para dirigentes/cabecillas.','Arts. 12–13 (texto original): reglas especiales de investigación y juzgamiento, luego depuradas por el TC.'],
+ criterios:[{c:'Categoría no aplicable de forma simple',d:'Endurece la persecución penal (no cumple criterios de impunidad), pero su diseño original restringió garantías del debido proceso; el propio TC depuró el régimen en 2003. Se clasifica como ambiguo: fortalecimiento punitivo con costos constitucionales documentados.'}],
+ votacion:{txt:'No aplica votación parlamentaria: norma dictada por el Poder Ejecutivo de facto, sin Congreso en funciones.', s:'hecho'},
+ promotores:{txt:'Poder Ejecutivo (gobierno de A. Fujimori, periodo de facto). No presentar como "ley del Congreso".', s:'hecho'},
+ tc:{txt:'STC Exp. 010-2002-AI/TC (ene. 2003): inconstitucionalidad de varios artículos del régimen antiterrorista (incluida la conexa figura de traición a la patria del D.L. 25659); obligó a nuevos juicios en el fuero civil manteniendo el tipo base.', s:'hecho'},
+ fuentes:[
+  {l:'Texto en SPIJ (buscar "Decreto Ley 25475")', u:'https://spij.minjus.gob.pe/spij-ext-web/#/inicio'},
+  {l:'STC 010-2002-AI/TC — TC', u:'https://www.tc.gob.pe/jurisprudencia/2003/00010-2002-AI.html'}],
+ analisis:[{who:'Tribunal Constitucional (STC 010-2002-AI/TC)', u:'https://www.tc.gob.pe/jurisprudencia/2003/00010-2002-AI.html', s:'Depuró el régimen antiterrorista: mantuvo el tipo penal base pero expulsó o reinterpretó disposiciones incompatibles con el debido proceso.'}],
+ interp:'Caso de estudio del trade-off entre eficacia punitiva y garantías: la legislación de emergencia de 1992 logró condenas masivas pero una parte fue anulada una década después. Lecturas en disputa: necesidad frente a Sendero Luminoso vs. costo constitucional documentado en la STC 010-2002.'
+},
+{
+ id:'l26479', numero:'Leyes N.º 26479 y N.º 26492', tipo:'Ley ordinaria', periodo:'1992-1995',
+ nombre:'Ley de amnistía a militares, policías y civiles (26479) y ley interpretativa que la blinda de revisión judicial (26492)',
+ fecha:'15/06/1995 y 02/07/1995', fechaS:'pend', temas:['seg','jus','dem'], dir:'debilita',
+ constit:{tipo:'incidencia', txt:'La Ley 26492 declara la amnistía no revisable en sede judicial: sustrae una ley del control jurisdiccional, materia de rango constitucional (arts. 138–139 Const.). La Corte IDH la contrastó con la Convención Americana.'},
+ periodoTxt:'Congreso Constituyente Democrático (CCD) / tránsito al Congreso ordinario 1995 — verificar en El Peruano qué órgano dio cada una',
+ sumilla:'Amnistía general para personal militar, policial y civil por hechos derivados de la lucha contrasubversiva (1980–1995); la 26492 declaró la amnistía no revisable judicialmente y de aplicación obligatoria.',
+ estado:'Sin efectos jurídicos: la Corte IDH, caso Barrios Altos vs. Perú (fondo, 14/03/2001), declaró ambas leyes incompatibles con la Convención Americana y carentes de efectos jurídicos.',
+ articulos:['Ley 26479, art. 1: amnistía general por hechos derivados de la lucha contra el terrorismo desde mayo de 1980.','Ley 26492, arts. 1–3: la amnistía no es revisable en sede judicial y es de obligatoria aplicación.'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'Extinción total de la acción penal y de condenas por graves violaciones de derechos humanos (art. 1 de la 26479); la 26492 elimina además el control judicial.'},{c:'Debilitamiento del control democrático',d:'La cláusula de no revisabilidad judicial altera el equilibrio entre poderes.'}],
+ votacion:{txt:'No se encontró registro digitalizado de votación nominal para estas normas (aprobadas de madrugada en junio de 1995 según registro histórico de prensa). Se requiere el diario de debates de la sesión correspondiente o que el usuario lo cargue. No se infiere el voto individual desde la afiliación partidaria.', s:'falta'},
+ promotores:{txt:'Aprobación impulsada por la mayoría oficialista Cambio 90–Nueva Mayoría según la historiografía del periodo (fuente secundaria; autoría formal por confirmar en archivo).', s:'pend'},
+ tc:{txt:'Corte IDH — Barrios Altos vs. Perú (14/03/2001): las leyes de autoamnistía "carecen de efectos jurídicos"; sentencia de interpretación (09/2001) extendió el efecto general. Es el precedente interamericano central contra la impunidad, invocado hoy frente a las Leyes 32107 y 32419.', s:'hecho'},
+ fuentes:[
+  {l:'Buscar texto oficial en El Peruano', u:'https://busquedas.elperuano.pe/'},
+  {l:'Corte IDH — Barrios Altos vs. Perú (fondo, 2001)', u:'https://www.corteidh.or.cr/docs/casos/articulos/Seriec_75_esp.pdf'}],
+ analisis:[{who:'Corte IDH — Barrios Altos (2001)', u:'https://www.corteidh.or.cr/docs/casos/articulos/Seriec_75_esp.pdf', s:'Primera declaración de que leyes de autoamnistía carecen de efectos jurídicos; base del deber de investigar graves violaciones de DD.HH.'}],
+ interp:'Antecedente directo contra el que se leen la Ley 32107 (2024) y la Ley 32419 (2025). Posición alternativa registrada en 1995: la amnistía como instrumento de pacificación; desestimada por la Corte IDH para graves violaciones de DD.HH.'
+},
+{
+ id:'l26657', numero:'Ley N.º 26657', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley de Interpretación Auténtica del artículo 112 de la Constitución (habilitación de la segunda reelección de A. Fujimori)',
+ fecha:'23/08/1996', fechaS:'pend', temas:['dem'], dir:'debilita',
+ constit:{tipo:'incidencia', txt:'Modifica el efecto de una regla constitucional (art. 112, límite de reelección) por vía de "interpretación auténtica" en ley ordinaria, eludiendo el procedimiento de reforma del art. 206.'},
+ periodoTxt:'Congreso ordinario 1995–2000 (mayoría Cambio 90–Nueva Mayoría)',
+ sumilla:'"Interpreta" que la reelección presidencial inmediata del art. 112 se computa desde la vigencia de la Constitución de 1993, habilitando una tercera postulación consecutiva en 2000.',
+ estado:'Agotó sus efectos con la candidatura de 2000.',
+ articulos:['Artículo único: la reelección del art. 112 "está referida y condicionada a los mandatos presidenciales iniciados con posterioridad a la fecha de promulgación" de la Constitución de 1993.'],
+ criterios:[{c:'Debilitamiento del sistema electoral / control democrático',d:'Alteración de una regla de alternancia en beneficio del poder de turno, por vía distinta a la reforma constitucional.'}],
+ votacion:{txt:'No se encontró registro digitalizado de votación nominal (agosto de 1996, anterior al umbral ~2001). Se requiere el diario de debates de la sesión o que el usuario lo cargue.', s:'falta'},
+ promotores:{txt:'Impulsada por la mayoría oficialista Cambio 90–Nueva Mayoría según la historiografía del periodo (fuente secundaria; autoría formal por confirmar en archivo).', s:'pend'},
+ tc:{txt:'El TC (1997) emitió resolución con tres magistrados votando por la inaplicabilidad de la ley al caso concreto; los tres fueron destituidos por el Congreso. La Corte IDH, caso Tribunal Constitucional vs. Perú (2001), condenó al Estado por esa destitución.', s:'hecho'},
+ fuentes:[
+  {l:'Archivo Digital de Leyes del Congreso', u:'https://leyes.congreso.gob.pe/'},
+  {l:'Corte IDH — Tribunal Constitucional vs. Perú (2001)', u:'https://www.corteidh.or.cr/docs/casos/articulos/Seriec_71_esp.pdf'}],
+ analisis:[{who:'Corte IDH — caso Tribunal Constitucional (2001)', u:'https://www.corteidh.or.cr/docs/casos/articulos/Seriec_71_esp.pdf', s:'Evidencia del costo institucional de la norma sobre la independencia judicial.'}],
+ interp:'Caso paradigmático de erosión democrática por vía legal formal. Referencia comparada útil para evaluar leyes actuales que "interpretan" materia constitucional (ver Ley 31355).'
+},
+{
+ id:'l28094', numero:'Ley N.º 28094', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley de Partidos Políticos (hoy Ley de Organizaciones Políticas)',
+ fecha:'01/11/2003', fechaS:'pend', temas:['dem'], dir:'fortalece', constit:null,
+ periodoTxt:'Congreso 2001–2006 (transición democrática)',
+ sumilla:'Primer marco integral de partidos: requisitos de inscripción, democracia interna, y reglas de financiamiento con supervisión de la ONPE.',
+ estado:'Vigente con numerosas modificaciones (financiamiento, primarias, y la Ley 32054 de 2024 que blinda a los partidos frente a la disolución judicial — ver interpretación). Verificar texto consolidado en SPIJ.',
+ articulos:['Título sobre inscripción y comités partidarios.','Democracia interna (elección de candidatos).','Título VI: financiamiento público y privado, verificación y control por la ONPE.'],
+ criterios:[{c:'Fortalecimiento del sistema electoral',d:'Crea por primera vez fiscalización del financiamiento partidario a cargo de la ONPE.'}],
+ votacion:{txt:'Registro de votación por sesión disponible para el periodo 2001–2006; detalle nominal por confirmar en SIL antes de citar cifras.', s:'pend'},
+ promotores:{txt:'Consenso multipartidario del Congreso de la transición; autoría formal del dictamen por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin proceso de inconstitucionalidad relevante identificado contra el texto original.', s:'hecho'},
+ fuentes:[
+  {l:'Texto consolidado — SPIJ', u:'https://spij.minjus.gob.pe/spij-ext-web/#/inicio'},
+  {l:'ONPE — supervisión de financiamiento', u:'https://www.onpe.gob.pe/'}],
+ analisis:[{who:'IDL-Reporteros (2026), sobre la Ley 32054', u:'https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/', s:'Documenta que la Ley 32054 (jun. 2024, impulsada por W. Cerrón, aprobada con 84 votos de FP, RP, PL, APP y otras) impide la disolución judicial de partidos, tras lo cual partidos investigados pidieron ser excluidos de procesos penales — modificación regresiva del marco de 2003 (ver ficha propia de la Ley 32054).'}],
+ interp:'Línea de base del eje electoral: las reformas posteriores se evalúan contra el estándar de fiscalización creado aquí. La Ley 32054 es candidata prioritaria para la próxima iteración del eje electoral.'
+},
+{
+ id:'l30077', numero:'Ley N.º 30077', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley contra el Crimen Organizado',
+ fecha:'20/08/2013', fechaS:'pend', temas:['seg'], dir:'fortalece', constit:null,
+ periodoTxt:'Congreso 2011–2016',
+ sumilla:'Define la organización criminal (3 o más personas, reparto de tareas, permanencia, fin de cometer delitos graves) y habilita técnicas especiales de investigación para un catálogo amplio de delitos.',
+ estado:'Vigente; su núcleo (definición del art. 2) fue modificado por la Ley 32108 (2024) y la Ley 32138 (2024). Verificar texto consolidado en SPIJ.',
+ articulos:['Art. 2 (texto original): definición amplia y flexible de organización criminal, alineada con la Convención de Palermo.','Art. 3: catálogo de delitos comprendidos.','Títulos II–III: técnicas especiales de investigación y medidas limitativas de derechos.'],
+ criterios:[{c:'Fortalecimiento de capacidades de persecución',d:'Amplía herramientas de investigación de Fiscalía y PNP para criminalidad compleja.'}],
+ votacion:{txt:'Votación nominal disponible para el periodo 2011–2016; detalle por confirmar en SIL antes de citar cifras.', s:'pend'},
+ promotores:{txt:'Iniciativas del Ejecutivo y de bancadas diversas consolidadas en dictamen; autoría por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin sentencia de inconstitucionalidad contra el texto original identificada.', s:'hecho'},
+ fuentes:[
+  {l:'Texto — Archivo del Congreso', u:'https://leyes.congreso.gob.pe/'},
+  {l:'Texto consolidado — SPIJ', u:'https://spij.minjus.gob.pe/spij-ext-web/#/inicio'}],
+ analisis:[{who:'Convención de Palermo (ONU, 2000)', u:'https://www.unodc.org/documents/treaties/UNTOC/Publications/TOC%20Convention/TOCebook-s.pdf', s:'Estándar internacional del diseño original: definición amplia sin exigir control de mercados ilegales. Vara técnica contra la que se evalúan las Leyes 32108 y 32138.'}],
+ interp:'Línea de base del eje seguridad.'
+},
+{
+ id:'l30220', numero:'Ley N.º 30220', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley Universitaria — creación de la SUNEDU',
+ fecha:'09/07/2014', fechaS:'pend', temas:['edu','reg'], dir:'fortalece', constit:null,
+ periodoTxt:'Congreso 2011–2016',
+ sumilla:'Crea la SUNEDU con Consejo Directivo elegido por concurso público, a cargo del licenciamiento obligatorio y la supervisión del sistema universitario.',
+ estado:'Vigente, modificada en su gobernanza por la Ley 31520 (2022).',
+ articulos:['Art. 12: creación de la SUNEDU.','Art. 15: funciones — licenciamiento, supervisión, potestad sancionadora.','Art. 17 (texto original): Consejo Directivo por concurso público de méritos.'],
+ criterios:[{c:'Fortalecimiento de regulador',d:'Requisitos de idoneidad técnica, selección por concurso y competencias sancionadoras.'}],
+ votacion:{txt:'Aprobada el 26/06/2014; cifras nominales por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Dictamen impulsado desde la Comisión de Educación (presidida por D. Mora, Perú Posible) según registro público del debate; confirmar en SIL.', s:'pend'},
+ tc:{txt:'El TC confirmó la constitucionalidad del modelo de supervisión estatal de la calidad universitaria frente a demandas basadas en la autonomía universitaria (expedientes por confirmar en tc.gob.pe).', s:'pend'},
+ fuentes:[
+  {l:'Texto — Archivo del Congreso', u:'https://leyes.congreso.gob.pe/'},
+  {l:'SUNEDU — normativa', u:'https://www.gob.pe/sunedu'}],
+ analisis:[{who:'TC — jurisprudencia sobre Ley Universitaria', u:'https://www.tc.gob.pe/jurisprudencia/', s:'Validó el modelo de licenciamiento y supervisión frente a la autonomía universitaria.'}],
+ interp:'Línea de base del eje reguladores/educación.'
+},
+{
+ id:'l30904', numero:'Leyes N.º 30904 y N.º 30916', tipo:'Ley de reforma constitucional', periodo:'1995-',
+ nombre:'Reforma constitucional que crea la Junta Nacional de Justicia (30904) y su Ley Orgánica (30916)',
+ fecha:'10/01/2019 y 19/02/2019 (días por confirmar)', fechaS:'pend', temas:['jus'], dir:'fortalece',
+ constit:{tipo:'reforma', txt:'La Ley 30904 es reforma constitucional formal: modifica los arts. 154, 155 y 156 de la Constitución (conformación y funciones de la JNJ en reemplazo del CNM). Fue ratificada en el referéndum de diciembre de 2018.'},
+ periodoTxt:'Congreso 2016–2021 · reforma ratificada por referéndum (dic. 2018) tras el escándalo de los "Cuellos Blancos del Puerto"',
+ sumilla:'Reemplaza al Consejo Nacional de la Magistratura por la Junta Nacional de Justicia: siete miembros elegidos por concurso público de méritos a cargo de una Comisión Especial (Defensor del Pueblo, presidentes del PJ, TC y JNE, Fiscal de la Nación, Contralor y rectores), con competencia para nombrar, ratificar y destituir jueces y fiscales, y designar a los jefes de ONPE y RENIEC.',
+ estado:'Vigente con modificaciones: la LOJNJ fue modificada en 2024 (régimen de suplentes) y su diseño está bajo presión institucional documentada (inhabilitaciones de miembros por el Congreso; PL 10585/2024-CR en trámite que ampliaría y a la vez condicionaría sus funciones).',
+ articulos:['Arts. 154–156 Const. reformados: funciones y conformación de la JNJ.','Ley 30916: concurso público de méritos para miembros, Comisión Especial, competencia sobre jueces y fiscales de todos los niveles y sobre las jefaturas de ONPE y RENIEC.'],
+ criterios:[{c:'Fortalecimiento institucional (línea de base)',d:'Selección por concurso público con requisitos de idoneidad y participación ciudadana (criterio inverso a los de debilitamiento §5); vínculo directo con el eje electoral por la designación de ONPE/RENIEC.'}],
+ votacion:{txt:'La reforma constitucional fue ratificada por referéndum (dic. 2018) con amplia mayoría; las votaciones parlamentarias de la 30904 y la 30916 (Congreso 2016–2021) están disponibles en el archivo del periodo — cifras por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Paquete de reforma judicial impulsado por el Ejecutivo (gobierno Vizcarra) tras los audios de 2018; dictámenes de las Comisiones de Constitución (R. Bartra) y Justicia (A. Oliva) según TVPerú. Confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin sentencia contra su diseño original identificada. El control ha operado en sentido inverso: el TC (mar. 2025) declaró inconstitucional el procedimiento disciplinario inmediato que la JNJ creó en 2020, anulando destituciones de magistrados vinculados al caso Cuellos Blancos (IDL).', s:'hecho'},
+ fuentes:[
+  {l:'Ley 30916 — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/1742317-1'},
+  {l:'Ley 30904 — Comisión Especial JNJ', u:'https://www.comisionespecial-jnj.gob.pe/normas/ley-n-30904/'},
+  {l:'Texto LOJNJ (PDF Congreso)', u:'https://www2.congreso.gob.pe/sicr/cendocbib/con5_uibd.nsf/FAF102A216A9F8A2052586F30036803B/$FILE/LEY-30916.pdf'}],
+ analisis:[{who:'IDL-Reporteros — trayectoria de la JNJ', u:'https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/', s:'Documenta el ciclo completo: creación tras Cuellos Blancos → inhabilitación de los miembros Tello y Vásquez por el Congreso (2024) → anulación por el TC de las destituciones que la JNJ había impuesto → recomposición del órgano. La línea de base de 2019 es la vara contra la que se mide ese ciclo.'}],
+ interp:'Ficha de línea de base del eje justicia: única reforma del observatorio ratificada por referéndum, lo que da un contraste procedimental directo con la Ley 31988 (que revirtió otro resultado del mismo referéndum sin nueva consulta). El deterioro del diseño no vino de una derogación sino de intervenciones sucesivas sobre sus integrantes.'
+},
+{
+ id:'l31355', numero:'Ley N.º 31355', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que desarrolla el ejercicio de la cuestión de confianza',
+ fecha:'21/10/2021', fechaS:'pend', temas:['dem'], dir:'ambiguo',
+ constit:{tipo:'incidencia', txt:'Desarrolla y restringe por ley ordinaria el mecanismo constitucional de la cuestión de confianza (arts. 132–134 Const.), relevante para la facultad presidencial de disolución del Congreso.'},
+ periodoTxt:'Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo y promulgada por el propio Congreso (oct. 2021)',
+ sumilla:'Excluye la cuestión de confianza para materias de competencia exclusiva del Congreso y atribuye al Congreso interpretar si la confianza fue denegada.',
+ estado:'Vigente y validada por el TC (feb. 2022).',
+ articulos:['Materias excluidas de la cuestión de confianza.','Reserva al Congreso la calificación del rehusamiento (relevante para el art. 134 Const.).'],
+ criterios:[{c:'Cambio en el balance de poderes — clasificación en disputa',d:'Lectura A: protege la separación de poderes frente al uso expansivo de la confianza (2019). Lectura B: debilita el contrapeso del Ejecutivo y blinda al Congreso. Los criterios §5 apuntan en direcciones opuestas — la misma división 4-2 del TC reproduce ambas lecturas.'}],
+ votacion:{txt:'Aprobada por insistencia tras la observación del Ejecutivo (hecho verificado en la sentencia del TC y cobertura de El Comercio); cifras y desagregado por bancada por confirmar en el acta del SIL.', s:'pend'},
+ promotores:{txt:'Impulsada por bancadas de oposición al gobierno de P. Castillo (registro de prensa); autoría formal por confirmar en SIL.', s:'pend'},
+ tc:{txt:'TC, Exp. 00032-2021-PI/TC (Sentencia 6/2022, "Caso de la cuestión de confianza II", sesión del 03/02/2022): demanda del Poder Ejecutivo declarada INFUNDADA al no alcanzarse los 5 votos exigidos para la inconstitucionalidad — 4 magistrados por infundada (Blume, Miranda, Sardón, Ferrero) y 2 por fundada (Espinosa-Saldaña, ponente, y Ledesma, quienes consideraron que la ley reforma materia constitucional por vía ordinaria). La ley mantiene su constitucionalidad por regla de votación, no por consenso del Pleno.', s:'hecho'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano (buscador)', u:'https://busquedas.elperuano.pe/'},
+  {l:'Sentencia 6/2022 — Exp. 00032-2021-PI/TC (PDF)', u:'https://tc.gob.pe/jurisprudencia/2022/00032-2021-AI.pdf'},
+  {l:'Nota oficial del TC', u:'https://www.tc.gob.pe/institucional/notas-de-prensa/el-tribunal-constitucional-declaro-infundada-la-demanda-de-inconstitucionalidad-contra-la-ley-31355-ley-que-desarrolla-el-ejercicio-de-la-cuestion-de-confianza/'}],
+ analisis:[{who:'Debate constitucionalista (posiciones a favor y en contra)', u:'https://www.enfoquederecho.com/', s:'Punto en disputa: si la ley "desarrolla" o reforma el art. 134 por vía de ley ordinaria — el patrón metodológico de la Ley 26657 con signo político inverso. El voto de la minoría del TC (Espinosa-Saldaña/Ledesma) sostiene precisamente que era materia de reforma constitucional; los cuatro votos por infundada, que solo explicita límites ya reconocidos.'}],
+ interp:'Ejemplo de por qué el instrumento separa criterios de conclusiones: la misma disposición admite lecturas opuestas según la teoría constitucional de partida.'
+},
+{
+ id:'l31399', numero:'Ley N.º 31399', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que fortalece el proceso de aprobación de leyes de reforma constitucional (restricción del referéndum)',
+ fecha:'ene/2022 (día por confirmar en El Peruano)', fechaS:'pend', temas:['dem'], dir:'debilita',
+ constit:{tipo:'incidencia', txt:'Condiciona por ley ordinaria el ejercicio de derechos de participación de rango constitucional (arts. 32 y 206 Const.): el referéndum de reforma constitucional requiere aprobación parlamentaria previa.'},
+ periodoTxt:'Congreso 2021–2026 · promulgada por el propio Congreso',
+ sumilla:'Modifica la Ley 26300 para que las iniciativas de reforma constitucional vía referéndum pasen primero por la aprobación del Congreso conforme al art. 206.',
+ estado:'Vigente.',
+ articulos:['Modificación de los arts. 40 y 44 de la Ley 26300.'],
+ criterios:[{c:'Debilitamiento de mecanismos de participación',d:'Condiciona un mecanismo de democracia directa a la voluntad previa del órgano al que podría contrapesar. Lectura alternativa registrada: el art. 206 nunca contempló un referéndum sin Congreso.'}],
+ votacion:{txt:'Aprobada por insistencia tras observación del Ejecutivo (registro de prensa); cifras nominales por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Por confirmar en SIL (expediente y dictamen de la Comisión de Constitución).', s:'pend'},
+ tc:{txt:'El TC declaró infundada la demanda de inconstitucionalidad (2022); expediente y fundamentos por confirmar en tc.gob.pe.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano (buscador)', u:'https://busquedas.elperuano.pe/'},
+  {l:'Expediente — SIL', u:'https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search'}],
+ analisis:[{who:'TC — control de constitucionalidad (2022)', u:'https://www.tc.gob.pe/jurisprudencia/', s:'Avaló la exigencia; el debate técnico quedó en si el art. 206 admite una vía plebiscitaria autónoma.'}],
+ interp:'Dictada en el contexto de la propuesta de asamblea constituyente de 2021–2022; leerla junto con la Ley 31355 como ciclo de reequilibrio hacia el Legislativo.'
+},
+{
+ id:'l31520', numero:'Ley N.º 31520', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que "restablece la autonomía y la institucionalidad de las universidades peruanas" (contrarreforma de la SUNEDU)',
+ fecha:'21/07/2022', fechaS:'hecho', temas:['reg','edu'], dir:'debilita', constit:null, bancadas:['FP','RP','PL','AVP'],
+ periodoTxt:'Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo',
+ sumilla:'Modifica los arts. 1, 12, 15, 17 y 20 de la Ley 30220: recompone el Consejo Directivo de la SUNEDU con representantes de las propias universidades y gremios (elimina el concurso público) y hace que el Superintendente sea elegido entre sus miembros.',
+ estado:'Vigente; su aplicación se consolidó con la sentencia del TC de diciembre de 2022.',
+ articulos:['Art. 17 modificado: Consejo Directivo de 7 miembros con representantes de universidades públicas y privadas, Concytec, Sineace, MINEDU y colegios profesionales; Superintendente elegido entre sus miembros.','Art. 3: deroga la 1.ª DCF de la Ley 30220 (mecanismos de fomento de calidad).'],
+ criterios:[{c:'Debilitamiento de regulador',d:'(1) Elimina la selección por concurso público de méritos (flexibilización de idoneidad); (2) incorpora a representantes de los regulados en la dirección del regulador (captura por diseño).'}],
+ votacion:{txt:'Primera votación (feb. 2022): 69-39-2, con votos de Fuerza Popular, Renovación Popular y gran parte de Perú Libre y Avanza País; segunda (may. 2022): 68-39-5; insistencia (13/07/2022): 72-39-4. Cifras según prensa (RPP; Wikipedia con fuentes); confirmar acta nominal en SIL antes de atribuir votos individuales.', s:'pend'},
+ promotores:{txt:'Impulsada desde la Comisión de Educación 2021–2022 con respaldo de Fuerza Popular, Perú Libre, Renovación Popular y Podemos Perú según cobertura periodística; autoría formal por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Un juzgado constitucional declaró nulo el procedimiento legislativo (amparo de SUNEDU, jul. 2022), pero la ley se publicó; el TC declaró infundada la demanda de inconstitucionalidad (dic. 2022), presentada por 33 congresistas mayormente promotores de la propia ley — maniobra procesal cuestionada por SUNEDU y especialistas (registro de prensa).', s:'hecho'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/2088561-1'},
+  {l:'PDF consolidado — Archivo del Congreso', u:'https://leyes.congreso.gob.pe/Documentos/2021_2026/ADLP/Texto_Consolidado/31520-TXM.pdf'},
+  {l:'Expediente — SIL', u:'https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search'}],
+ analisis:[
+  {who:'SUNEDU (comunicados y amparo)', u:'https://www.gob.pe/sunedu', s:'Sostuvo que la recomposición con regulados vulnera cosa juzgada e independencia del regulador.'},
+  {who:'Cobertura (Gestión, El Comercio, La República)', u:'https://gestion.pe/peru/congreso-publica-ley-que-debilita-a-la-sunedu-pese-a-que-poder-judicial-declaro-nulo-proceso-legislativo-ley-universitaria-reforma-universitaria-rmmn-noticia/', s:'Documenta la publicación pese al amparo y los cambios posteriores en licenciamiento y supervisión (efecto observado).'}],
+ interp:'Caso central del eje reguladores: el mecanismo no fue recortar funciones sino cambiar quién controla el órgano. Posición alternativa (acogida por el TC): la reforma devuelve autonomía universitaria y corrige una supervisión estatal excesiva.'
+},
+{
+ id:'l31751', numero:'Ley N.º 31751', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica el Código Penal en materia de suspensión de la prescripción ("Ley Soto")',
+ fecha:'25/05/2023', fechaS:'pend', temas:['seg','jus'], dir:'debilita', constit:null, bancadas:['FP','RP','PL','APP','POD','SP','AP','AVP','PB'],
+ periodoTxt:'Congreso 2021–2026 · primera del paquete penal 2023–2025',
+ sumilla:'Limita la suspensión de la prescripción de la acción penal a un máximo de un año, reduciendo el tiempo efectivo para procesar causas complejas (corrupción, lavado, crimen organizado) y las sujetas a antejuicio.',
+ estado:'Vigente con ajustes posteriores; verificar norma modificatoria exacta en SPIJ.',
+ articulos:['Modificación del art. 84 del Código Penal: la suspensión de la prescripción "en ningún caso podrá exceder de un año".'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'Acorta el plazo efectivo de persecución en causas complejas (elevación práctica de umbrales), con retroactividad benigna sobre procesos en curso. Efecto reforzado en aforados: los procesos no avanzan sin antejuicio, pero la prescripción sí corre (IDL).'}],
+ votacion:{txt:'Aprobada el 25/05/2023. Convoca registra 79 votos en primera votación y 90 en segunda; IDL-Reporteros registra 81 votos a favor de Fuerza Popular, Renovación Popular, Perú Libre, APP, Podemos, Somos Perú, Acción Popular, Avanza País, Perú Bicentenario y no agrupados. Discrepancia entre fuentes secundarias: resolver con el acta nominal del SIL.', s:'pend'},
+ promotores:{txt:'Impulsada por el entonces presidente del Congreso Alejandro Soto (APP) según La República e IDL; conocida en prensa como "Ley Soto" por coincidir con procesos penales que lo involucraban (atribución periodística). Autoría formal por confirmar en SIL.', s:'pend'},
+ tc:{txt:'La Corte Suprema (2024) calificó la norma de inconstitucional y planteó su revisión por el TC (IDL-Reporteros). Posteriormente, el TC declaró infundada la demanda de inconstitucionalidad en su contra, junto con la de la Ley 32107, según el recuento de IDL (abr. 2026): expediente, fecha y fundamentos exactos por verificar en tc.gob.pe antes de citar el fallo como hecho.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano (buscador)', u:'https://busquedas.elperuano.pe/'},
+  {l:'Convoca — análisis de votaciones del paquete', u:'https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan'},
+  {l:'IDL-Reporteros — votos y leyes', u:'https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/'}],
+ analisis:[{who:'IDL-Reporteros', u:'https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/', s:'La identifica como la primera "ley procrimen": afecta casos complejos de corrupción transnacional y genera impunidad para altos funcionarios con antejuicio.'},
+  {who:'Ministerio Público', u:'https://lpderecho.pe/', s:'Advirtió riesgo de archivamiento por prescripción de causas de corrupción y criminalidad organizada (efecto observado que motivó ajustes legislativos posteriores).'}],
+ interp:'Inaugura el patrón del paquete 2023–2025: modificación procesal-penal con retroactividad benigna sobre causas en curso, incluidas las de actores políticos.'
+},
+{
+ id:'l31990', numero:'Ley N.º 31990', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica el proceso especial de colaboración eficaz (arts. 473, 476-A y 481-A del Código Procesal Penal)',
+ fecha:'21/03/2024', fechaS:'hecho', temas:['jus','seg'], dir:'debilita', constit:null, bancadas:['POD','APP','AP','PL','FP','RP','AVP'],
+ periodoTxt:'Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo; promulgada por el presidente del Congreso (A. Soto) el 19/03/2024',
+ sumilla:'Impone un plazo máximo al proceso de colaboración eficaz (8 meses desde la solicitud hasta el acuerdo, prorrogable 4 meses, u 8 en crimen organizado), rebautiza al colaborador como "aspirante", exige abogado defensor en toda reunión con el fiscal, prohíbe corroborar la declaración de un aspirante con la de otro aspirante y restringe el uso de esas declaraciones para medidas limitativas en otros procesos.',
+ estado:'Vigente y de aplicación inmediata a los procesos de colaboración en trámite (2.ª Disposición Complementaria Final): el plazo de 8 meses empezó a correr el 22/03/2024 incluso para procesos iniciados años antes.',
+ articulos:['Art. 473 CPP modificado (num. 11): plazo máximo de 8 meses hasta el acuerdo, prórroga de 4 meses (8 en crimen organizado); vencido el plazo, el fiscal procede conforme al art. 477 (denegatoria).','Art. 473 num. 10 incorporado: prohibición de corroboración cruzada entre declaraciones de aspirantes.','Art. 481-A modificado: la declaración del aspirante solo sustenta medidas limitativas si se acompaña de otros elementos de convicción corroborados en su propia carpeta.','2.ª DCF: aplicación a los procesos en trámite.'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'La caducidad del proceso de colaboración y la prohibición de corroboración cruzada limitan la técnica central de los megacasos (Lava Jato, Cuellos Blancos), que requieren corroboración internacional prolongada (criterio: debilitamiento de capacidades de investigación). La procuradora ad hoc de Lava Jato advirtió 54 procesos de colaboración en riesgo solo en ese caso (Infobae).'}],
+ votacion:{txt:'Trámite verificado (boletín Proyecto Zero 24 con el expediente): proyectos de origen presentados el 26/10/2021; dictamen de la Comisión de Justicia (ene. 2022) sobre los PL 012-2021 y 565-2021; autógrafa observada por el Ejecutivo y aprobada por insistencia a mediados de 2023; publicada recién el 21/03/2024. Bancadas a favor según La República: Podemos, APP, Acción Popular, Perú Libre, Fuerza Popular, Renovación Popular y sectores de Avanza País. Nota de discrepancia: La República sitúa una votación el 14/03/2024 mientras Proyecto Zero 24 registra la insistencia a mediados de 2023 — resolver la fecha exacta de la votación de insistencia con el acta del SIL.', s:'pend'},
+ promotores:{txt:'Iniciativa original de María Cabrera Vega (Podemos Perú, oct. 2021: PL 012-2021/565-2021 acumulados), según La República y el boletín citado; coautores y desagregado por confirmar en SIL.', s:'pend'},
+ tc:{txt:'El Ministerio Público advirtió que obstaculiza la verificación de testimonios en casos complejos; demanda o sentencia del TC por verificar.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial (PDF El Peruano vía LP)', u:'https://img.lpderecho.pe/wp-content/uploads/2024/03/Ley-31990-modifica-el-Codigo-Procesal-Penal-Proceso-especial-por-colaboracion-eficaz-LPDERECHO.pdf'},
+  {l:'Boletín Proyecto Zero 24 — iter legislativo', u:'https://proyectozero24.com/wp-content/uploads/2024/03/Boletin-PZ-24-2024-Ley-N%C2%B0-31990-21.MAR_.2024.pdf'},
+  {l:'PPU Legal — análisis de las modificaciones', u:'https://ppulegal.com/actualidad-legal/se-publico-la-ley-n-31990-que-modifica-el-codigo-procesal-penal-a-fin-de-fortalecer-el-proceso-especial-por-colaboracion-eficaz/'}],
+ analisis:[{who:'Ministerio Público (advertencias registradas por prensa)', u:'https://larepublica.pe/politica/2025/10/23/congreso-aprobo-8-leyes-a-favor-del-crimen-organizado-el-legado-de-dina-boluarte-respaldado-por-el-gobierno-de-jeri-hnews-1112947', s:'La colaboración eficaz fue la herramienta central de los megacasos de corrupción; los plazos de caducidad la vuelven inviable en investigaciones con cooperación internacional.'}],
+ interp:'Pieza del paquete dirigida a la herramienta probatoria (no al tipo penal): junto con 31751 (tiempo) y 32108 (tipo), configura una reducción simultánea de plazo, herramienta y alcance de la persecución de criminalidad compleja.'
+},
+{
+ id:'l31988', numero:'Ley N.º 31988', tipo:'Ley de reforma constitucional', periodo:'1995-',
+ nombre:'Ley de Reforma Constitucional que restablece la bicameralidad en el Congreso de la República',
+ fecha:'20/03/2024', fechaS:'hecho', temas:['dem'], dir:'ambiguo',
+ constit:{tipo:'reforma', txt:'Reforma constitucional formal por la vía del art. 206: modifica 53 artículos de la Constitución (arts. 2, 39, 56–57, 78–108, 117–137, 139, 142, 150, 157, 161–162, 182–183, 191, 194, 201, 203 y 206), aprobada en dos legislaturas con más de 87 votos, sin referéndum; no observable por el Ejecutivo.'},
+ periodoTxt:'Congreso 2021–2026 · rige desde las elecciones generales de 2026 (Congreso bicameral instalado en julio de 2026)',
+ sumilla:'Reinstaura el Congreso bicameral (60 senadores mínimo, 130 diputados) y la reelección parlamentaria inmediata (deroga el art. 90-A introducido por el referéndum de 2018). Rediseña además piezas del entramado institucional: el Contralor pasa a ser designado y removible por el Senado, el Senado ratifica al presidente del BCR y elige a parte de su directorio, y el Fiscal de la Nación gana facultad de evaluar acusaciones constitucionales.',
+ estado:'Vigente; primera aplicación en las elecciones generales de 2026. El número de senadores y diputados puede ampliarse por ley orgánica (66 votos), ya no por reforma constitucional.',
+ articulos:['Art. 90 modificado: Poder Legislativo bicameral — Senado (mín. 60) y Cámara de Diputados (130).','Disposición derogatoria del art. 90-A: habilita la reelección parlamentaria inmediata.','Art. 82: el Contralor General es designado por el Senado a propuesta del Ejecutivo, removible por la misma cámara.','Art. 86: el Senado ratifica al presidente del BCR y elige a tres directores.','Reglas de acusación constitucional: el Fiscal de la Nación evalúa el contenido en lugar de denunciar automáticamente.'],
+ criterios:[{c:'Clasificación en disputa',d:'Lectura A (fortalece): la bicameralidad añade revisión y calidad legislativa (diseño institucional clásico). Lectura B (debilita el control democrático): revierte sin consulta el referéndum de 2018 (~80% votó "No" a un diseño similar) y concentra en el Senado designaciones clave (Contraloría, BCR), materia del eje reguladores. Ambos criterios §5 aplican en sentidos opuestos; la ficha registra ambos.'}],
+ votacion:{txt:'Primera votación: 16/11/2023, 93 votos a favor (NODAL/RPP). Segunda votación: 06/03/2024, 91 a favor; las fuentes discrepan en el resto (Infobae y NODAL: 30 en contra, 1 abstención; El Comercio y la nota oficial del Congreso: 31 en contra y 1 ó 3 abstenciones). Cuestión previa de Flor Pablo (no agrupada) para votar bicameralidad y reelección por separado: rechazada por la Junta de Portavoces (Infobae). Resolver el desagregado con el acta nominal del SIL.', s:'pend'},
+ promotores:{txt:'Dictamen de la Comisión de Constitución sobre los PL 660, 724, 792, 1044, 1091 y otros; impulsada principalmente por Fuerza Popular según Infobae. Autores de los proyectos acumulados por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Reforma aprobada por la vía del art. 206 (no observable por el Ejecutivo); ninguna sentencia de control identificada. El punto jurídico debatido — si revertir una decisión de referéndum exige nueva consulta — no fue judicializado con éxito.', s:'hecho'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/2272076-2'},
+  {l:'PDF consolidado — Archivo del Congreso', u:'https://www.leyes.congreso.gob.pe/Documentos/2021_2026/ADLP/Texto_Consolidado/31988-TXM.pdf'},
+  {l:'Nota oficial de la votación — Congreso', u:'https://comunicaciones.congreso.gob.pe/noticias/pleno-aprueba-en-segunda-votacion-reforma-constitucional-que-permite-el-retorno-de-la-bicameralidad/'}],
+ analisis:[
+  {who:'Asociación Civil Transparencia', u:'https://www.elperuano.pe/noticia/238553-la-bicameralidad-retornara-el-2026', s:'Saludó la restitución de la bicameralidad con un informe de 74 cambios en 56 artículos, advirtiendo cuestiones pendientes para el fortalecimiento democrático. Posición matizadamente favorable registrada.'},
+  {who:'Infobae — análisis crítico', u:'https://www.infobae.com/peru/2024/03/20/gobierno-de-dina-boluarte-publica-ley-que-restablece-la-bicameralidad-y-la-reeleccion-parlamentaria-que-otros-cambios-implica/', s:'Señala la evasión del referéndum ratificatorio, la ampliación futura de escaños por ley orgánica (66 votos) y el filtro del Fiscal de la Nación en acusaciones constitucionales como los cambios de mayor alcance más allá de la bicameralidad.'}],
+ interp:'La ficha se mantiene ambigua porque los criterios chocan. Lo verificable: el procedimiento (art. 206, dos legislaturas, 93 y 91 votos), la reversión del referéndum de 2018 y el paquete de rediseños institucionales incluidos en la misma ley (Contraloría, BCR, acusación constitucional), que merecen seguimiento propio en los ejes reguladores y justicia bajo el Congreso bicameral 2026–2031.'
+},
+{
+ id:'l32054', numero:'Ley N.º 32054', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que excluye a los partidos políticos de las medidas penales aplicables a las personas jurídicas (no disolución judicial)',
+ fecha:'10/06/2024', fechaS:'hecho', temas:['dem','jus'], dir:'debilita', constit:null, bancadas:['FP','PL','RP','POD','APP','AP','SP','PB','AVP'],
+ periodoTxt:'Congreso 2021–2026 · promulgada por el Ejecutivo (edición extraordinaria de El Peruano)',
+ sumilla:'Modifica el art. 105 del Código Penal y el art. 5 de la Ley 30424: los partidos políticos quedan fuera de las medidas judiciales aplicables a personas jurídicas (disolución, suspensión, clausura de locales); solo se les aplica el régimen sancionador administrativo de la Ley 28094. La responsabilidad penal recae únicamente en sus integrantes como individuos.',
+ estado:'Vigente y de aplicación inmediata a procesos en curso; tras su publicación, partidos investigados pidieron ser excluidos de los procesos penales (IDL).',
+ articulos:['Art. 105 CP modificado (párrafos 4.º y 5.º incorporados): las medidas contra personas jurídicas no alcanzan a los partidos políticos.','Art. 5 de la Ley 30424 modificado en el mismo sentido para la responsabilidad administrativa derivada del proceso penal.'],
+ criterios:[{c:'Debilitamiento del control sobre organizaciones políticas',d:'Suprime la consecuencia jurídica más severa (disolución/suspensión judicial) para partidos como personas jurídicas, dejando solo multas administrativas electorales (disposición: art. 105 CP modificado). El criterio §5 de fiscalización de partidos aplica: se recorta la capacidad sancionadora del sistema de justicia sobre las organizaciones, no solo sobre individuos.'},{c:'Contexto de beneficio propio',d:'Al momento de la aprobación, Fuerza Popular (caso Cocteles), Perú Libre (Dinámicos del Centro), Podemos (inscripción ante ONPE) y Renovación Popular (lavado de activos) afrontaban investigaciones como organizaciones (Infobae, Mazuelos): hecho contextual verificado en fuentes citadas, relevante para la lectura de la norma.'}],
+ votacion:{txt:'Aprobada por el Pleno el 10/05/2024 con exoneración de segunda votación. Las fuentes discrepan en la cifra: RPP registra 89 a favor y 15 en contra; Infobae, 88 a favor; IDL-Reporteros, 84 a favor. Bancadas a favor: Fuerza Popular, Perú Libre, Renovación Popular, Podemos, APP, Acción Popular, Somos Perú, Perú Bicentenario, Avanza País y no agrupados; en contra en bloque: Cambio Democrático–Juntos por el Perú (Infobae). Resolver con el acta nominal del SIL.', s:'pend'},
+ promotores:{txt:'Proyectos convergentes de Alejandro Muñante (Renovación Popular, ene. 2022) y Waldemar Cerrón (Perú Libre, oct. 2023, PL 6084); texto sustitutorio de las Comisiones de Constitución (Martha Moyano, FP) y Justicia (Américo Gonza, PL). Fuentes: RPP, Infobae, HYTIMES; confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin demanda de inconstitucionalidad identificada. El efecto práctico documentado es procesal: pedidos de exclusión de partidos en causas en curso (Lava Jato y otros), según IDL y Mazuelos.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial (PDF El Peruano vía LP)', u:'https://img.lpderecho.pe/wp-content/uploads/2024/06/Ley-32054-LPDerecho.pdf'},
+  {l:'RPP — crónica de la votación', u:'https://rpp.pe/politica/judiciales/congreso-aprueba-ley-para-que-partidos-politicos-disueltos-clausurados-o-suspendidos-ante-hechos-ilicitos-noticia-1553895'},
+  {l:'IDL-Reporteros — votos y leyes', u:'https://www.idl-reporteros.pe/los-votos-y-las-leyes-del-pacto-para-capturar-el-pais/'}],
+ analisis:[
+  {who:'Mazuelos Abogados', u:'https://mazuelosabogados.com.pe/comentarios-a-la-ley-32054-ley-que-optimizar-la-democracia-representativa-y-establecer-medidas-para-la-lucha-contra-la-corrupcion-en-las-organizaciones-politicas/', s:'La exclusión carece de justificación técnica en la exposición de la ley y se aplica a procesos en marcha (Lava Jato: Fuerza Popular, Partido Nacionalista, PPK, Perú Posible); incentiva análisis costo-beneficio frente al cumplimiento.'},
+  {who:'Infobae — mapa de investigaciones', u:'https://www.infobae.com/peru/2024/05/10/pleno-del-congreso-blinda-a-partidos-politicos-aprueban-proyecto-de-ley-que-los-exonera-de-sanciones-penales-y-embargos/', s:'Documenta que las bancadas que votaron a favor pertenecen a partidos bajo investigación fiscal como organizaciones.'},
+  {who:'Posición favorable (texto de la ley)', u:'https://img.lpderecho.pe/wp-content/uploads/2024/06/Ley-32054-LPDerecho.pdf', s:'La justificación declarada: impedir la injerencia judicial en la vida de los partidos y proteger la democracia representativa, individualizando la responsabilidad penal. Registrada como posición alternativa.'}],
+ interp:'Norma bisagra entre los ejes electoral y justicia: no toca reglas de votación, pero remueve el mecanismo por el que la justicia podía sancionar a un partido como organización. Su lectura conjunta con la Ley 32108 (misma ventana temporal, beneficiarios superpuestos) es el argumento central de la tesis del "pacto" documentada por IDL; la tesis es interpretación, los votos y las investigaciones en curso son hechos citados.'
+},
+{
+ id:'jnjmod', numero:'Ley que modifica el art. 9 de la Ley 30916 — régimen de suplentes de la JNJ (número por confirmar en El Peruano)', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Modificatoria de la Ley Orgánica de la JNJ que amplía los criterios de incorporación de miembros suplentes',
+ fecha:'may–jun/2024 (por confirmar)', fechaS:'pend', temas:['jus'], dir:'debilita', constit:null,
+ periodoTxt:'Congreso 2021–2026 · aprobada tras la inhabilitación de los miembros titulares Inés Tello y Aldo Vásquez por el propio Congreso (mar. 2024)',
+ sumilla:'Reforma el art. 9 de la Ley 30916 para ampliar los criterios de selección de miembros suplentes de la JNJ sobre la base de los puntajes del concurso original, habilitando el ingreso de postulantes con calificaciones inferiores tras las vacancias generadas por las inhabilitaciones y las renuncias de los primeros llamados (A. Siles y M. Rosell).',
+ estado:'Vigente; permitió recomponer el pleno de la JNJ que luego adoptó las decisiones de 2025 sobre la Fiscalía de la Nación. Número de ley, fecha exacta y texto por confirmar en El Peruano.',
+ articulos:['Art. 9 de la Ley 30916 modificado: criterios de incorporación de suplentes por orden de mérito del concurso, con umbral flexibilizado (verificar redacción exacta).'],
+ criterios:[{c:'Debilitamiento de requisitos de idoneidad',d:'Flexibiliza el estándar de ingreso al órgano (criterio §5 de flexibilización de idoneidad de autoridades), en secuencia directa con la remoción de titulares por el Congreso: el efecto combinado — remover y luego rebajar el umbral de reemplazo — altera la composición del órgano sin reformar sus funciones.'}],
+ votacion:{txt:'Aprobada por el Congreso en mayo de 2024 (La República); cifras y desagregado por bancada por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Proyecto 7716/2023-DP presentado por la Defensoría del Pueblo (J. Gutiérrez, elegido defensor por el Congreso en 2023; IDL registra su vínculo previo con Perú Libre), impulsado en la Comisión de Constitución (M. Moyano, FP) según La República. Confirmar trámite en SIL.', s:'pend'},
+ tc:{txt:'Sin proceso identificado contra esta modificatoria. Contexto de control conexo: la inhabilitación de Tello y Vásquez fue cuestionada ante instancias nacionales e internacionales — resoluciones por documentar antes de citar.', s:'pend'},
+ fuentes:[
+  {l:'La República — crónica de la aprobación', u:'https://larepublica.pe/politica/2024/05/10/congreso-aprueban-modificatoria-de-ley-que-rellena-la-jnj-con-abogados-de-baja-calificacion-364460'},
+  {l:'Buscar texto — El Peruano', u:'https://busquedas.elperuano.pe/'},
+  {l:'Expediente PL 7716/2023-DP — SIL', u:'https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search'}],
+ analisis:[{who:'La República / registro del contexto', u:'https://larepublica.pe/politica/2024/05/10/congreso-aprueban-modificatoria-de-ley-que-rellena-la-jnj-con-abogados-de-baja-calificacion-364460', s:'Sitúa la norma en la secuencia inhabilitación → renuncias de reemplazos mejor calificados → rebaja del umbral, y documenta la alianza procesal entre la Defensoría y la Comisión de Constitución.'}],
+ interp:'Caso ilustrativo del patrón del eje justicia identificado en el panel: el control de los órganos se disputa por composición, no por competencias. Junto con el PL 10585/2024-CR (en trámite: JNJ designaría provisionales y el mandato del Fiscal de la Nación se recortaría), configura el frente prioritario de monitoreo del eje bajo el Congreso bicameral 2026–2031.'
+},
+{
+ id:'l31981', numero:'Ley N.º 31981', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica la Ley 28094 sobre elecciones primarias',
+ fecha:'2024 (fecha exacta por confirmar en El Peruano)', fechaS:'pend', temas:['dem'], dir:'ambiguo', constit:null,
+ periodoTxt:'Congreso 2021–2026',
+ sumilla:'Modifica el régimen de elecciones primarias de la Ley de Organizaciones Políticas aplicable a los comicios de 2026 (modalidades de elección de candidatos por las organizaciones políticas). Citada por el JNE como una de las cuatro bases normativas del proceso 2026 (Res. 0002-2026-JNE).',
+ estado:'Vigente; aplicada en las primarias del ciclo electoral 2026. Contenido detallado por verificar contra el texto oficial.',
+ articulos:['Modificaciones al régimen de primarias de la Ley 28094 (arts. 24 y ss.): por verificar disposiciones exactas en el texto publicado.'],
+ criterios:[{c:'Clasificación pendiente de verificación del texto',d:'Conforme a la sección 5.3 del proyecto, no se fuerza la clasificación: el sentido (¿primarias competitivas o formalidad controlada por las cúpulas?) depende de las modalidades exactas de elección que fijó la norma, que deben verificarse en el texto oficial antes de clasificar.'}],
+ votacion:{txt:'Por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin proceso identificado.', s:'pend'},
+ fuentes:[
+  {l:'Buscar texto — El Peruano', u:'https://busquedas.elperuano.pe/'},
+  {l:'Res. 0002-2026-JNE (cita la base normativa 2026)', u:'https://portal.jne.gob.pe/portal_documentos/files/56e2b016-f54a-4f81-ab2b-79b07aaada87.pdf'}],
+ analisis:[{who:'JNE — reglamentación del ciclo 2026', u:'https://portal.jne.gob.pe/portal_documentos/files/56e2b016-f54a-4f81-ab2b-79b07aaada87.pdf', s:'Las resoluciones reglamentarias del JNE operativizaron las modalidades de primarias (voto de afiliados o delegados) fijadas por esta ley y la 32058.'}],
+ interp:'Ficha semilla del subeje "reglas de competencia interna": las primarias fueron una promesa central de la reforma política de 2019-2021 (nunca aplicadas en su diseño original de primarias abiertas); qué quedó de ellas en 2026 es una pregunta empírica pendiente que esta ficha debe responder en la siguiente verificación.'
+},
+{
+ id:'l32058', numero:'Ley N.º 32058', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica la Ley Orgánica de Elecciones y la Ley de Organizaciones Políticas para la "optimización del proceso electoral" 2026',
+ fecha:'14/06/2024', fechaS:'hecho', temas:['dem'], dir:'ambiguo', constit:null,
+ periodoTxt:'Congreso 2021–2026',
+ sumilla:'Fija el cronograma del ciclo 2026 (convocatoria con 365 días de anticipación incluyendo primarias; cierre de afiliación el 12/07/2024 para las generales y el 07/10/2024 para las regionales), regula candidaturas en primarias (individuales o por lista, con un año mínimo de afiliación) y modifica causales de suspensión y cancelación de inscripción de organizaciones políticas.',
+ estado:'Vigente; base del D.S. 039-2025-PCM que convocó a elecciones para el 12/04/2026. Modificada/complementada por la Ley 32245 (ene. 2025) y al menos una ley de octubre de 2025 (número por identificar, citada en la Res. 0002-2026-JNE).',
+ articulos:['18.ª Disposición Transitoria de la LOE: convocatoria a las EG 2026 con 365 días de anticipación, comprendiendo las primarias; plazos de afiliación 12/07/2024 y 07/10/2024.','Art. 24-A de la Ley 28094: candidaturas en primarias individuales o por lista, según estatuto; mínimo un año de afiliación.','Art. 11-A de la Ley 28094 modificado: suprime la causal de suspensión de inscripción por no acreditar el funcionamiento permanente de comités partidarios.'],
+ criterios:[{c:'Clasificación mixta — ambigua',d:'A favor del orden del proceso: fija cronograma y plazos ciertos con un año de anticipación (el JNE defendió luego esos plazos frente a intentos de reabrirlos). En sentido de debilitamiento de la fiscalización: la supresión de la causal del art. 11-A dejó al JNE sin herramienta para sancionar a partidos sin comités operativos — tras la fiscalización de 2024, ninguna organización acreditó el mínimo de comités y ninguna pudo ser sancionada (El Comercio citando informes del JNE). Ambos efectos constan en disposiciones concretas.'}],
+ votacion:{txt:'Aprobada en mayo de 2024 (Infobae); cifras y desagregado por bancada por confirmar en SIL. Dato de contexto verificado: congresistas que la aprobaron (Bellido, Picón) presentaron meses después proyectos para modificar los plazos que ellos mismos fijaron (Infobae).', s:'pend'},
+ promotores:{txt:'Por confirmar en SIL (dictamen de la Comisión de Constitución).', s:'pend'},
+ tc:{txt:'Sin proceso de inconstitucionalidad identificado. El control operó por vía institucional: el Pleno del JNE emitió acuerdos e informes defendiendo la intangibilidad del cronograma frente a proyectos de modificación posteriores.', s:'hecho'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/2297823-2'},
+  {l:'PDF oficial (ONPE)', u:'https://www.onpe.gob.pe/modFinanciamiento/LEY-32058.pdf'},
+  {l:'El Comercio — cuestionamiento del JNE', u:'https://elcomercio.pe/politica/partidos/jne-cuestiona-cambios-del-congreso-a-la-ley-de-organizaciones-politicas-elecciones-2026-ultimas-noticia/'}],
+ analisis:[
+  {who:'JNE (informes de fiscalización, 2024)', u:'https://elcomercio.pe/politica/partidos/jne-cuestiona-cambios-del-congreso-a-la-ley-de-organizaciones-politicas-elecciones-2026-ultimas-noticia/', s:'Ninguna organización política acreditó el mínimo de comités en funcionamiento y, por la supresión del art. 11-A, ninguna pudo ser suspendida: efecto observado directo de la norma sobre la capacidad fiscalizadora.'},
+  {who:'Infobae — intentos de reapertura de plazos', u:'https://www.infobae.com/peru/2024/10/08/congreso-busca-cambiar-la-ley-electoral-para-ampliar-los-plazos-de-afiliacion-a-los-partidos-politicos/', s:'Documenta proyectos para extender los plazos de afiliación ya vencidos, presentados por congresistas que votaron la ley original, y la resistencia del JNE.'},
+  {who:'Defensoría del Pueblo — supervisión EG 2026', u:'https://www.defensoria.gob.pe/supervision-elecciones-generales-2026/', s:'Registro hito por hito del proceso 2026 bajo este marco: 43 partidos inscritos, más de 306 mil registros de firmas observados por RENIEC y comunicados al Ministerio Público.'}],
+ interp:'La ficha más útil del eje para el criterio §5.4 (efecto jurídico vs. observado): el mismo texto ordena el calendario y desarma una herramienta de fiscalización. El hallazgo del JNE — cero partidos con comités acreditados, cero sancionables — es el indicador empírico más limpio del estado real de las organizaciones que compitieron en 2026.'
+},
+{
+ id:'l32245', numero:'Ley N.º 32245', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que adecúa la normativa electoral al proceso de elecciones del Congreso bicameral',
+ fecha:'15/01/2025', fechaS:'hecho', temas:['dem'], dir:'ambiguo', constit:null,
+ periodoTxt:'Congreso 2021–2026 · norma de implementación de la Ley 31988',
+ sumilla:'Modifica la Ley Orgánica de Elecciones, la Ley de Organizaciones Políticas y la Ley de Elecciones del Parlamento Andino para operativizar la elección simultánea de senadores (distrito único y por circunscripción) y diputados en 2026.',
+ estado:'Vigente; aplicada en las EG del 12/04/2026.',
+ articulos:['Reglas de candidatura y asignación de escaños para Senado (mixto: representación por circunscripción y distrito único nacional) y Cámara de Diputados.','Adecuaciones al orden de resultados y cifra repartidora (art. 31 LOE modificado).'],
+ criterios:[{c:'Norma de implementación — clasificación reservada',d:'Es desarrollo técnico de la Ley 31988; su evaluación de fondo sigue la de aquella. Las decisiones distributivas específicas (magnitud de circunscripciones senatoriales, umbrales) pueden tener efectos propios sobre la proporcionalidad que requieren análisis politológico dedicado antes de clasificar.'}],
+ votacion:{txt:'Por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin proceso identificado.', s:'pend'},
+ fuentes:[
+  {l:'Buscar texto — El Peruano (Ley 32245)', u:'https://busquedas.elperuano.pe/'},
+  {l:'LOE consolidada (El Peruano, con modificatorias)', u:'https://diariooficial.elperuano.pe/Normas/obtenerDocumento?idNorma=5'}],
+ analisis:[{who:'JNE — Res. 0002-2026 y reportes DNEECT', u:'https://www.jne.gob.pe/dneect/2026/P_JNE_050326_1.pdf', s:'Las resoluciones del JNE y sus reportes de análisis del proceso 2026 son la fuente técnica sobre cómo operaron en la práctica las nuevas reglas bicamerales.'}],
+ interp:'Cierre normativo del ciclo electoral 2023–2025. Para el seguimiento 2026–2031: los efectos distributivos del diseño senatorial (¿a qué partidos benefició el distrito único vs. las circunscripciones?) son medibles con los resultados oficiales de abril de 2026 — análisis empírico pendiente ideal para la siguiente iteración.'
+},
+{
+ id:'l32107', numero:'Ley N.º 32107', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que precisa la aplicación y los alcances del delito de lesa humanidad y crímenes de guerra ("ley de prescripción")',
+ fecha:'09/08/2024', fechaS:'hecho', temas:['seg','jus'], dir:'debilita',
+ constit:{tipo:'incidencia', txt:'Regula por ley ordinaria la eficacia interna de tratados de derechos humanos (Estatuto de Roma, Convención sobre Imprescriptibilidad), materia de rango constitucional (art. 55 y 4.ª Disposición Final de la Const.), en colisión con jurisprudencia de la Corte IDH.'},
+ periodoTxt:'Congreso 2021–2026 · dada por la Comisión Permanente y promulgada por el Congreso ante la no promulgación del Ejecutivo',
+ sumilla:'Nadie será procesado ni sancionado por delitos de lesa humanidad o crímenes de guerra por hechos anteriores al 01/07/2002; los hechos previos prescriben según la ley nacional, bajo sanción de nulidad.',
+ estado:'Vigente y validada por el TC (dic. 2025), pero con inaplicación judicial masiva vía control difuso/convencionalidad.',
+ articulos:['Art. 4: los delitos anteriores a la vigencia del Estatuto de Roma y de la Convención "prescriben en los plazos establecidos en la ley nacional"; toda sanción en contrario es nula.','Art. 5: prohibición de procesar o sancionar por lesa humanidad hechos anteriores al 01/07/2002.'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'Arts. 4 y 5 habilitan la extinción por prescripción de procesos por graves violaciones de DD.HH. del periodo 1980–2000.'},{c:'Tensión con obligaciones internacionales',d:'Colisión con Barrios Altos y La Cantuta (Corte IDH); rechazo público de la CIDH.'}],
+ votacion:{txt:'Aprobada en la Comisión Permanente (jul. 2024) — consta en el texto oficial. Cifras nominales por confirmar en actas del SIL.', s:'pend'},
+ promotores:{txt:'Impulsada por congresistas de Fuerza Popular y Renovación Popular según cobertura periodística uniforme; autoría formal por confirmar en SIL.', s:'pend'},
+ tc:{txt:'TC: demandas del CAL y del Ministerio Público declaradas infundadas (Exps. 00009-2024-PI/TC y 00023-2024-PI/TC acumulados; dic. 2025): 4 magistrados por la constitucionalidad con criterio interpretativo (con suspensión de plazos de prescripción por sustracción estatal de la investigación) y 3 por la inconstitucionalidad. En paralelo: 47 pedidos de prescripción rechazados por jueces penales a marzo de 2025 (IDL) invocando derecho internacional.', s:'hecho'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/2313835-1'},
+  {l:'Sentencia TC (reseña LP)', u:'https://lpderecho.pe/tc-confirma-constitucionalidad-ley-32107-prescribe-delitos-lesa-humanidad-exp-00009-2024-pi-tc-y-exp-00023-2024-pi-tc-acumulados/'},
+  {l:'Expediente — SIL', u:'https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search'}],
+ analisis:[
+  {who:'C. Caro Coria (penalista)', u:'https://ccfirma.com/prescripcion-de-delitos-de-lesa-humanidad-ley-no-32107-los-jueces-y-el-tribunal-constitucional-tendran-la-palabra-final/', s:'La ley "no dice nada nuevo" en tipicidad, pero jueces y TC definirían su eficacia real.'},
+  {who:'IDL / seguimiento judicial (LP Derecho)', u:'https://lpderecho.pe/ley-32107-jueces-inaplican-norma-prescribe-delitos-lesa-humanidad/', s:'Efecto observado: inaplicación sistemática en casos Pativilca, Mariella Barreto y otros.'},
+  {who:'Mazuelos Abogados', u:'https://mazuelosabogados.com.pe/comentarios-a-la-ley-n-32107-ley-que-precisa-la-aplicacion-y-los-alcances-del-delito-de-lesa-humanidad-y-crimenes-de-guerra-en-la-legislacion-peruana/', s:'El art. 5 (nulidad expresa de procesos previos) es el núcleo en tensión directa con La Cantuta vs. Perú.'}],
+ interp:'Reedición por vía de "precisión temporal" del debate de las amnistías de 1995, y antecedente directo de la Ley 32419. El dato empírico central es la brecha entre validez formal (TC) y eficacia real (inaplicación judicial).'
+},
+{
+ id:'l32108', numero:'Ley N.º 32108', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica el Código Penal y la Ley contra el Crimen Organizado (redefinición de "organización criminal")',
+ fecha:'09/08/2024', fechaS:'hecho', temas:['seg'], dir:'debilita', constit:null, bancadas:['PL','BM','PB','APP','POD','HyD'],
+ periodoTxt:'Congreso 2021–2026 · origen: PL 5981-2023 (presentado sep. 2023)',
+ sumilla:'Redefine la organización criminal exigiendo "compleja estructura desarrollada", delitos graves con pena mayor a seis años y la finalidad de "obtener el control de la cadena de valor de una economía o mercado ilegal"; condiciona allanamientos a la presencia del interesado y su abogado.',
+ estado:'Vigente, parcialmente modificada por la Ley 32138 (19/10/2024), que mantuvo la nueva definición y la regla de defensa en allanamientos.',
+ articulos:['Art. 317 CP modificado: triple finalidad copulativa (delitos graves + control de cadena de valor de mercado ilegal + beneficio económico); pena de 8 a 15 años.','Art. 2 de la Ley 30077 modificado en el mismo sentido.','Allanamiento con presencia del investigado y su defensa (modificación de la Ley 27379).'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'(1) La triple finalidad copulativa eleva el umbral probatorio del tipo; (2) retroactividad benigna habilita revisión de procesos en curso; (3) la regla de allanamiento con aviso reduce la eficacia de la técnica de investigación.'}],
+ votacion:{txt:'Primera votación en el Pleno: 30/05/2024. Wikipedia (con fuentes) registra a favor a Perú Libre, Bloque Magisterial, Perú Bicentenario, APP, Podemos y Honor y Democracia, con la mayoría de Fuerza Popular y Avanza País en abstención; IDL-Reporteros registra 49 votos incluyendo a Fuerza Popular entre las bancadas a favor. Discrepancia entre fuentes secundarias sobre el rol de FP en la primera votación: resolver con el acta nominal del SIL. Segunda votación: Comisión Permanente, 04/07/2024. No promulgada por el Ejecutivo; publicada por orden del Congreso.', s:'pend'},
+ promotores:{txt:'Autor del proyecto de origen (PL 5981-2023): Waldemar Cerrón (Perú Libre), según Wikipedia con fuentes y la resolución judicial del Exp. 00203-2024-23, que la calificó de "ley con nombre propio" por beneficiar a su autor, investigado por organización criminal (esa calificación es apreciación judicial citada, no conclusión de este instrumento). Confirmar expediente en SIL.', s:'pend'},
+ tc:{txt:'La Junta de Fiscales Supremos acordó demandar su inconstitucionalidad (Acuerdo 6548-2024, 12/08/2024). Jurisprudencia dividida: la Corte Suprema la aplicó (Casación 2637-2023/Nacional, 02/10/2024) sin cuestionar su constitucionalidad; jueces de investigación preparatoria la inaplicaron por control difuso/convencionalidad (Exp. 00203-2024-23) o la interpretaron conforme a la Convención de Palermo. Reacciones de prensa (mar. 2026) indican que el TC habría convalidado las "leyes procrimen": expediente y sentido exacto del fallo por verificar en tc.gob.pe.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial (PDF El Peruano vía LP)', u:'https://img.lpderecho.pe/wp-content/uploads/2024/08/Ley-32108-LPDerecho.pdf'},
+  {l:'Acuerdo de la Junta de Fiscales Supremos', u:'https://lpderecho.pe/fiscalia-rechaza-norma-crimen-organizado-demanda-inconstitucionalidad/'},
+  {l:'Expediente PL 5981-2023 — SIL', u:'https://wb2server.congreso.gob.pe/spley-portal/#/expediente/search'}],
+ analisis:[
+  {who:'PUCP — Facultad de Derecho', u:'https://facultad-derecho.pucp.edu.pe/ventana-juridica/apuntes-sobre-la-inconstitucionalidad-de-la-ley-32108-de-crimen-organizado/', s:'Violación del mandato de taxatividad e incompatibilidad con la Convención de Palermo; cita el Informe Técnico 000229-2024-JUS del MINJUSDH.'},
+  {who:'THĒMIS — Enfoque Derecho', u:'https://enfoquederecho.com/comentarios-a-la-ley-n32108-ley-que-modifica-el-codigo-penal-la-ley-contra-el-crimen-organizado-entre-otros/', s:'La triple finalidad copulativa reduce el universo de organizaciones perseguibles y abre revisión de procesos por retroactividad benigna.'},
+  {who:'Lectura a favor (ESFORD)', u:'https://esford.pe/ing/ley-n-32108/', s:'Sostiene que la definición recoge acuerdos plenarios de la Corte Suprema (AP 08-2019). Posición alternativa registrada.'},
+  {who:'Procuraduría Anticorrupción (vía El Comercio)', u:'https://elcomercio.pe/politica/justicia/ley-32108-del-congreso-sobre-crimen-organizado-tambien-impactara-en-casos-por-corrupcion-procuraduria-anticorrupcion-y-hay-unos-500-casos-que-pueden-verse-afectados-los-cuellos-blancos-del-puerto-los-dinamicos-del-centro-noticia/', s:'Efecto observado estimado: ~500 casos de corrupción afectados a nivel nacional (Cuellos Blancos, Dinámicos del Centro, etc.).'}],
+ interp:'La norma con el debate técnico más documentado del ciclo 2024. El punto verificable en el texto es el paso de una finalidad simple (Palermo/Ley 30077) a una triple finalidad copulativa; el contexto de aplicación retroactiva a procesos de figuras políticas sostiene la lectura de "ley con beneficiario", en disputa con la lectura garantista.'
+},
+{
+ id:'l32130', numero:'Ley N.º 32130', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica el Código Procesal Penal para trasladar peso de la investigación del delito a la Policía Nacional',
+ fecha:'10/10/2024', fechaS:'hecho', temas:['seg','jus'], dir:'debilita', constit:null, bancadas:['FP','APP','AP','PL','POD'],
+ periodoTxt:'Congreso 2021–2026',
+ sumilla:'Reasigna a la PNP funciones de investigación del delito frente a la conducción fiscal, con el argumento de agilizar los procesos penales.',
+ estado:'Vigente. El Ministerio Público advirtió conflictos de competencia con la conducción fiscal de la investigación (art. 159 Const.).',
+ articulos:['Modificaciones al CPP (D.Leg. 957) sobre el rol de la PNP en diligencias de investigación.'],
+ criterios:[{c:'Política criminal — clasificación según criterio de capacidades',d:'El Ministerio Público sostiene que fragmenta la conducción de la investigación (criterio: debilitamiento de capacidades/coordinación de la persecución); los promotores sostienen que la agiliza. La disposición verificable es la reasignación de funciones; el efecto es materia en disputa con posición institucional del MP en contra.'}],
+ votacion:{txt:'Aprobada por el Pleno el 03/10/2024 con 76 votos a favor, 25 en contra y 10 abstenciones, con apoyo de Fuerza Popular, APP, Acción Popular, Perú Libre y Podemos Perú (La República). Acta nominal por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Iniciativa promovida por José Cueto Aservi (Renovación Popular), según La República; confirmar en SIL.', s:'pend'},
+ tc:{txt:'El Ministerio Público (gestión Villena) la consideró inconstitucional por desnaturalizar el modelo de investigación del art. 159 Const. y pidió su archivo; demanda o sentencia del TC por verificar.', s:'pend'},
+ fuentes:[
+  {l:'Texto — El Peruano (buscador: Ley 32130)', u:'https://busquedas.elperuano.pe/'},
+  {l:'La República — recuento del paquete', u:'https://larepublica.pe/politica/2025/10/23/congreso-aprobo-8-leyes-a-favor-del-crimen-organizado-el-legado-de-dina-boluarte-respaldado-por-el-gobierno-de-jeri-hnews-1112947'}],
+ analisis:[{who:'Fiscalía de la Nación (comunicado, oct. 2024)', u:'https://larepublica.pe/politica/2025/10/23/congreso-aprobo-8-leyes-a-favor-del-crimen-organizado-el-legado-de-dina-boluarte-respaldado-por-el-gobierno-de-jeri-hnews-1112947', s:'"Desnaturaliza el modelo de investigación penal" y puede generar conflictos de competencia entre fiscales y policías. IDL y el CAL advirtieron riesgo de interferencia política.'}],
+ interp:'Pieza del paquete dirigida a la arquitectura institucional de la persecución (quién investiga), complementaria a las que tocan el tipo penal (32108) y los plazos (31751).'
+},
+{
+ id:'l32138', numero:'Ley N.º 32138', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que modifica la Ley 30077 modificada por la Ley 32108 (ajustes al régimen de crimen organizado)',
+ fecha:'19/10/2024', fechaS:'hecho', temas:['seg'], dir:'ambiguo', constit:null, bancadas:['FP','APP','RP','AP','SP','AVP','POD','PL','BM','HyD'],
+ periodoTxt:'Congreso 2021–2026 · respuesta a la presión social (paros de transportistas contra la 32108)',
+ sumilla:'Ajusta la Ley 32108 sin derogarla: reincorpora al catálogo delitos como extorsión, secuestro y sicariato con pena mínima igual o mayor a cinco años y reformula la finalidad económica, pero mantiene la definición de "compleja estructura desarrollada" y la presencia de la defensa en allanamientos.',
+ estado:'Vigente. El Pleno rechazó en la misma sesión las propuestas de derogación de la Ley 32108. Verificar texto consolidado en SPIJ.',
+ articulos:['Modificación del art. 2 de la Ley 30077: delitos de extorsión, secuestro, sicariato y otros con pena mínima ≥ 5 años; finalidad de beneficio económico u otro de orden material.','Modificación del numeral 317.2 del art. 317 CP.','Mantiene la regla de allanamiento con presencia de la defensa (art. 216 de la Ley 32130 sin cambios).'],
+ criterios:[{c:'Corrección parcial — clasificación ambigua',d:'Revierte parcialmente la elevación de umbrales de la 32108 (reincorpora delitos y flexibiliza la finalidad), pero conserva sus elementos más cuestionados (definición restrictiva de estructura y regla de allanamiento). Cumple simultáneamente criterios de re-fortalecimiento y de mantenimiento del debilitamiento.'}],
+ votacion:{txt:'Cifra oficial del Congreso (nota de Comunicaciones, 16/10/2024): 81 a favor, 23 en contra, 8 abstenciones en primera votación, con exoneración de la segunda, sobre los PL 9055, 9100, 9114, 9178 y 9180/2024-CR. Discrepancia resuelta: LP Derecho reportó inicialmente 70 votos; la cifra oficial es 81. Desagregado por bancada (Infobae, pendiente de acta nominal SIL): FP 19 a favor; APP 10; RP 9; AP 8; Somos Perú 7; Avanza País 7 (+1 abst.); Podemos 6; PL 9 a favor y 1 en contra; Bloque Magisterial 4-2-1; Honor y Democracia 2-1-2; en contra: Cambio Democrático-Voces (8), Bancada Socialista (4, +1 abst.), Bloque Democrático (4, +1 abst.), no agrupados (2, +1 abst.). El debate consta en el Diario de los Debates (1.ª Legislatura Ordinaria 2024, Tomo III).', s:'pend'},
+ promotores:{txt:'Texto sustitutorio presentado por Isaac Mita (Perú Libre), presidente de la Comisión de Justicia, sobre los PL 9055, 9100 y otros (Wikipedia/Infobae); confirmar en SIL. Promulgada por el Ejecutivo (gobierno Boluarte).', s:'pend'},
+ tc:{txt:'Sin proceso de inconstitucionalidad propio identificado; comparte los cuestionamientos de fondo dirigidos contra la Ley 32108.', s:'pend'},
+ fuentes:[
+  {l:'Texto oficial — El Peruano', u:'https://busquedas.elperuano.pe/dispositivo/NL/2336227-1'},
+  {l:'Nota oficial de la votación — Congreso', u:'https://comunicaciones.congreso.gob.pe/noticias/aprueban-dictamen-que-precisa-procedimientos-para-la-lucha-contra-el-crimen-organizado/'},
+  {l:'Diario de los Debates — 1.ª Leg. Ord. 2024, Tomo III (PDF)', u:'https://www3.congreso.gob.pe/Docs/DGP/diariodebates/files/plo-2024/Tomo3PLO-2024/plo-2024-18.pdf'},
+  {l:'Infobae — votación desagregada por bancada', u:'https://www.infobae.com/peru/2024/10/16/el-congreso-aprobo-la-modificacion-de-ley-de-crimen-organizado-pero-mantiene-la-polemica-con-la-figura-de-los-allanamientos/'}],
+ analisis:[
+  {who:'La República / análisis jurídico', u:'https://larepublica.pe/politica/2024/10/17/ley-de-crimen-organizado-32108-cuales-son-las-modificaciones-realizadas-por-el-congreso-1110882', s:'Los cambios no tocan los dos núcleos cuestionados: la definición de organización criminal y la defensa presente en allanamientos.'},
+  {who:'Infobae — contexto del paro de transportistas', u:'https://www.infobae.com/peru/2024/10/13/el-blindaje-de-fuerza-popular-y-peru-libre-para-no-derogar-la-ley-32108-del-crimen-organizado/', s:'Documenta el rechazo del Congreso a la derogatoria demandada por gremios de transporte, pese al contexto de crisis de extorsiones.'}],
+ interp:'Caso útil para el criterio §5.4 (efecto jurídico vs. efecto esperado): formalmente es una corrección; en la lectura crítica dominante, un ajuste cosmético que consolidó la 32108. En la misma sesión se aprobó en primera votación el delito de "criminalidad sistemática" (ex "terrorismo urbano", 73-20-15), cuyo destino final debe verificarse por separado.'
+},
+{
+ id:'l32181', numero:'Ley N.º 32181', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que restringe la detención preliminar judicial a los casos de flagrancia',
+ fecha:'dic/2024 (día por confirmar)', fechaS:'pend', temas:['seg','jus'], dir:'debilita', constit:null,
+ periodoTxt:'Congreso 2021–2026',
+ sumilla:'Elimina la posibilidad de detención preliminar judicial en casos donde no hay flagrancia, incluso en investigaciones complejas por crimen organizado o corrupción.',
+ estado:'Vigente pese a la observación del Ejecutivo; el Congreso intentó luego restituir parcialmente la figura (Convoca). Verificar texto vigente en SPIJ.',
+ articulos:['Modificación del régimen de detención preliminar del CPP: procedencia limitada a flagrancia.'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'Suprime una herramienta cautelar clave en casos no flagrantes (criterio: debilitamiento de capacidades de investigación), con impacto directo en megacasos de corrupción y crimen organizado donde la detención preliminar evitaba fugas.'}],
+ votacion:{txt:'Aprobada con 94 votos en primera votación y 88 en la exoneración de la segunda (Convoca). Desagregado por bancada y acta nominal por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Autoría por confirmar en SIL; Convoca identifica coautorías reiteradas del paquete en congresistas de Perú Libre (W. Cerrón, F. Cruz, A. Gonza, K. Portalatino).', s:'pend'},
+ tc:{txt:'Proceso de inconstitucionalidad por verificar. El Ejecutivo la observó antes de su aprobación por insistencia.', s:'pend'},
+ fuentes:[
+  {l:'Texto — El Peruano (buscador: Ley 32181)', u:'https://busquedas.elperuano.pe/'},
+  {l:'Convoca — votaciones del paquete', u:'https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan'}],
+ analisis:[{who:'Convoca (análisis de votaciones)', u:'https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan', s:'La incluye entre las seis normas que la Fiscalía consideró un retroceso; su vigencia se mantuvo pese a los intentos de restitución.'}],
+ interp:'Complementa el patrón del paquete: tras limitar el tipo (32108), el plazo (31751) y la herramienta probatoria (31990), esta norma limita la herramienta cautelar.'
+},
+{
+ id:'l32182', numero:'Ley N.º 32182', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que introduce faltas muy graves para jueces y fiscales por decisiones en medidas cautelares',
+ fecha:'dic/2024 (fecha por confirmar)', fechaS:'pend', temas:['jus','seg'], dir:'debilita', constit:null,
+ periodoTxt:'Congreso 2021–2026',
+ sumilla:'Modifica la Ley 30483 (Carrera Fiscal), la Ley 29277 (Carrera Judicial), el Código Procesal Penal y el Código Penal para tipificar como faltas muy graves determinadas decisiones de fiscales y jueces — por ejemplo, disponer la libertad de detenidos en flagrancia omitiendo deberes funcionales — habilitando sanciones disciplinarias sobre el criterio jurisdiccional.',
+ estado:'Vigente. Verificar fecha de publicación y texto exacto en El Peruano/SPIJ.',
+ articulos:['Art. 47 de la Ley 30483 (Carrera Fiscal): incorpora los numerales 17 a 20 de faltas muy graves, incluida la disposición de libertad de detenidos en flagrancia "omitiendo sus deberes funcionales" en delitos con pena mayor a cinco años.','Modificaciones simétricas a la Ley 29277 (Carrera Judicial) y ajustes conexos al CPP y CP.'],
+ criterios:[{c:'Debilitamiento de la independencia de quienes investigan y juzgan',d:'Sancionar disciplinariamente el sentido de decisiones jurisdiccionales genera un efecto disuasivo sobre jueces y fiscales de casos complejos (criterio: debilitamiento de capacidades y de independencia de las entidades a cargo de la persecución).'}],
+ votacion:{txt:'Cifra oficial del Congreso (nota de Comunicaciones, oct. 2024): 86 a favor, 20 en contra y 2 abstenciones en primera votación del texto sustitutorio de los PL 8507/2024-CR y 8959/2024-CR. Convoca registra 84 votos en primera votación y 82 en la exoneración de la segunda — discrepancia entre la nota oficial y el conteo de Convoca, posiblemente por referirse a votaciones distintas del mismo trámite: resolver con las actas del SIL. Desagregado por bancada no disponible en las fuentes consultadas.', s:'pend'},
+ promotores:{txt:'Texto sustitutorio sobre los PL 8507/2024-CR y 8959/2024-CR (nota oficial del Congreso); autores de los proyectos por confirmar en SIL.', s:'pend'},
+ tc:{txt:'El Ministerio Público advirtió afectación de la independencia judicial y fiscal; demanda o sentencia del TC por verificar.', s:'pend'},
+ fuentes:[
+  {l:'Texto — El Peruano (buscador: Ley 32182)', u:'https://busquedas.elperuano.pe/'},
+  {l:'Nota oficial de la votación — Congreso', u:'https://comunicaciones.congreso.gob.pe/noticias/aprueban-iniciativa-que-optimiza-administracion-de-justicia-en-lucha-contra-el-crimen-organizado/'},
+  {l:'Convoca — votaciones del paquete', u:'https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan'}],
+ analisis:[{who:'Convoca / Ministerio Público', u:'https://convoca.pe/agenda-propia/17-congresistas-votaron-de-manera-reiterada-favor-de-leyes-procrimen-y-ahora-buscan', s:'Advertencia central: sancionar el criterio jurisdiccional puede afectar la independencia de magistrados que conocen casos contra actores políticos.'}],
+ interp:'Cierra el patrón del paquete apuntando al operador (juez/fiscal) y no solo a la norma: combinada con los antecedentes de presión sobre jueces que inaplicaron la 32108 y la 32419, configura el frente de riesgo para la independencia judicial que el eje justicia deberá profundizar.'
+},
+{
+ id:'l32419', numero:'Ley N.º 32419', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley de amnistía a miembros de las FF.AA., PNP y comités de autodefensa por la lucha contra el terrorismo (1980–2000)',
+ fecha:'14/08/2025', fechaS:'hecho', temas:['seg','jus'], dir:'debilita',
+ constit:{tipo:'incidencia', txt:'Ejerce la facultad constitucional de amnistía (art. 102.6 Const.) en colisión frontal con obligaciones internacionales de rango constitucional (Convención Americana, jurisprudencia Barrios Altos/La Cantuta) y con medidas provisionales vigentes de la Corte IDH.'},
+ periodoTxt:'Congreso 2021–2026 · promulgada por el Ejecutivo (gobierno Boluarte) el 13/08/2025 pese a medidas provisionales de la Corte IDH',
+ sumilla:'Amnistía a militares, policías y miembros de comités de autodefensa denunciados, investigados o procesados por hechos derivados de la lucha antisubversiva 1980–2000 (art. 1) y amnistía "humanitaria" a mayores de 70 años con sentencia firme (art. 2); excluye condenas por terrorismo y corrupción.',
+ estado:'Vigente formalmente; jueces la inaplican vía control difuso/convencionalidad. La Corte IDH había ordenado suspender su trámite (medidas provisionales, jul. 2025) y realizó audiencia el 21/08/2025; su aplicación coloca al Estado en desacato según el propio tribunal.',
+ articulos:['Art. 1: amnistía general para denunciados, investigados o procesados (sin sentencia firme) por hechos de la lucha antisubversiva 1980–2000.','Art. 2: amnistía humanitaria para mayores de 70 años con sentencia firme o en ejecución.'],
+ criterios:[{c:'Política criminal con efecto de impunidad',d:'Extinción de acción penal y de condenas por graves violaciones de DD.HH. (arts. 1 y 2), replicando el mecanismo de la Ley 26479 de 1995 declarado sin efectos por la Corte IDH.'}],
+ votacion:{txt:'Comisión Permanente: 16 a favor, 11 en contra, 0 abstenciones. Pleno, segunda votación (10/07/2025): 61 a favor, 44 en contra, 3 abstenciones, con respaldo principal de bancadas conservadoras (Infobae). Desagregado nominal por confirmar en SIL.', s:'pend'},
+ promotores:{txt:'Origen: PL 7549/2023-CR, tramitado en la Comisión de Defensa Nacional. Fuentes secundarias discrepan sobre el impulsor principal: Wikipedia atribuye la autoría a Jorge Montoya (Honor y Democracia); Infobae identifica a Fernando Rospigliosi (Fuerza Popular) como proponente. Bancadas promotoras según prensa: Fuerza Popular y APP entre las principales. Resolver autoría formal con el expediente del SIL.', s:'pend'},
+ tc:{txt:'Corte IDH: medidas provisionales ordenando suspender el trámite (jul. 2025, casos Barrios Altos y La Cantuta) — el Congreso aprobó la segunda votación y el Ejecutivo promulgó pese a ello; audiencia pública el 21/08/2025; el Gobierno calificó la orden de "insólita" y evaluó públicamente la permanencia en el sistema interamericano. ACNUDH y HRW rechazaron la norma. Jueces nacionales la inaplican por control difuso, con pedidos de sanción contra esos jueces desde el Congreso (Wikipedia con fuentes). Demanda de inconstitucionalidad ante el TC: por verificar.', s:'hecho'},
+ fuentes:[
+  {l:'Texto — El Peruano (buscador: Ley 32419)', u:'https://busquedas.elperuano.pe/'},
+  {l:'PUCP — análisis crítico del texto', u:'https://facultad-derecho.pucp.edu.pe/ventana-juridica/contradicciones-en-la-ley-de-amnistia-de-2025-en-el-peru/'},
+  {l:'ACNUDH — pronunciamiento', u:'https://news.un.org/es/story/2025/08/1540330'},
+  {l:'Infobae — crónica y votaciones', u:'https://www.infobae.com/peru/2025/08/13/dina-boluarte-promulga-hoy-ley-de-amnistia-para-policias-y-militares-y-hace-caso-omiso-a-pedido-de-la-cidh/'}],
+ analisis:[
+  {who:'PUCP — Facultad de Derecho', u:'https://facultad-derecho.pucp.edu.pe/ventana-juridica/contradicciones-en-la-ley-de-amnistia-de-2025-en-el-peru/', s:'Señala la ausencia de considerandos y la contradicción de amnistiar delitos comunes graves bajo la etiqueta de reconocimiento a las FF.AA.'},
+  {who:'ACNUDH / HRW', u:'https://news.un.org/es/story/2025/08/1540330', s:'El derecho internacional prohíbe amnistías y prescripción de violaciones graves de DD.HH.; HRW la calificó de "traición a las víctimas" con ~150 casos y 600 investigaciones en riesgo (cifra de la CNDDHH).'},
+  {who:'Posición a favor (promotores y Ejecutivo)', u:'https://gestion.pe/peru/politica/dina-boluarte-gobierno-promulga-ley-de-amnistia-para-militares-policias-y-comites-de-autodefensa-noticia/', s:'Justicia y reconocimiento a quienes combatieron el terrorismo; rechazo a la "intromisión" de órganos supranacionales. Registrada como posición alternativa.'}],
+ interp:'Cierre del ciclo 1995–2025 en materia de impunidad por el conflicto armado: reproduce el diseño de la Ley 26479 ya invalidado por Barrios Altos, ahora con confrontación abierta con el sistema interamericano (incluida la evaluación pública de retiro de la Corte IDH). Para el seguimiento 2026–2031: qué posición adopta el nuevo gobierno frente al desacato declarado y a los jueces que inaplican la norma es un indicador temprano del eje justicia.'
+},
+{
+ id:'univ2025', numero:'Ley que crea 20 universidades nacionales en 15 departamentos (número por confirmar en El Peruano)', tipo:'Ley ordinaria', periodo:'1995-',
+ nombre:'Ley que crea veinte universidades nacionales en Amazonas, Apurímac, Arequipa, Ayacucho, Cusco, Huancavelica, Ica, Junín, Lambayeque, Lima, Moquegua, Puno, San Martín, La Libertad y Ucayali',
+ fecha:'sep–oct/2025 (promulgada por el Congreso el 29–30/09/2025; publicación por confirmar)', fechaS:'pend', temas:['edu'], dir:'ambiguo', constit:null,
+ periodoTxt:'Congreso 2021–2026 · observada por el Ejecutivo (gobierno Boluarte) y aprobada por insistencia; promulgada por el presidente del Congreso (J. Jerí)',
+ sumilla:'Crea veinte universidades nacionales con personería de derecho público y autonomía plena, con carreras predefinidas por ley "en atención a la demanda laboral", sujetas a la Ley 30220 y con autorización a MINEDU, MEF y gobiernos subnacionales para priorizar inversiones. Dictamen que acumuló más de 30 proyectos de ley (3002, 3939, 4828, 5693, 6753 y otros).',
+ estado:'Vigente tras la insistencia (verificar número y fecha de publicación). Se inscribe en una ola mayor verificada: al menos 40 universidades públicas creadas por ley en 2025 y 16 más en 2026 (Gestión), más leyes declarativas (Ley 32126 — Talara; Ley 32620 — ocho universidades) y tres leyes del 06/06/2026 con nueve universidades y ocho institutos.',
+ articulos:['Art. 1: creación de las veinte universidades (UNAS de Sandia, UNABIP de Coracora, U.N.A. de Camaná, de Chiclayo, de Olmos, Chiriguana de Huancané, de Ayaviri, de Chincheros, de Chumbivilcas, Tecnológica La Esperanza, UNCITEP, entre otras).','Art. 4: carreras profesionales fijadas por ley para cada universidad, ampliables "conforme a los estándares de la SUNEDU".','Art. 5: autorización de priorización de inversiones a MINEDU, MEF y gobiernos regionales y locales.'],
+ criterios:[{c:'Clasificación en disputa — ambigua',d:'Lectura A (acceso/descentralización, posición de la Comisión de Educación): solo 3 de cada 10 egresados de secundaria acceden a educación superior y la oferta es limitada en sierra y selva (sustentación de S. Montalvo, PL, con referencia a CEPLAN). Lectura B (expansión sin sostenibilidad): crear universidades por ley con carreras predefinidas, sin evaluación previa de factibilidad ni financiamiento asegurado, tensiona el diseño de la Ley 30220 (arts. 26–28: creación condicionada y licenciamiento) — objeción planteada por el propio Ejecutivo al observar la autógrafa y, dentro del Congreso, por R. Kamiche (APP). Ambas posiciones constan en la nota oficial.'}],
+ votacion:{txt:'Cifras oficiales del Congreso (notas de Comunicaciones): primera votación el 14/12/2024 (última sesión de la legislatura, por mayoría); segunda votación con 63 a favor, 0 en contra y 17 abstenciones (mar. 2025); tras la observación del Ejecutivo, insistencia aprobada el 17/09/2025 con 74 a favor, 5 en contra y 30 abstenciones. Desagregado por bancada por confirmar en las actas del SIL.', s:'pend'},
+ promotores:{txt:'Dictamen sustentado por Segundo Montalvo Cubas (Perú Libre), presidente de la Comisión de Educación, Juventud y Deporte, sobre más de 30 proyectos acumulados de congresistas de diversas bancadas (notas oficiales del Congreso); autores individuales por confirmar en SIL.', s:'pend'},
+ tc:{txt:'Sin proceso de inconstitucionalidad identificado. El control operó por la vía política (observación de la autógrafa por el Ejecutivo, superada por insistencia). Pendiente de seguimiento: pronunciamientos de SUNEDU/MINEDU sobre el licenciamiento de las universidades creadas.', s:'pend'},
+ fuentes:[
+  {l:'Nota oficial — insistencia (17/09/2025)', u:'https://comunicaciones.congreso.gob.pe/noticias/aprueban-dictamen-de-insistencia-que-plantea-crear-universidades-nacionales-en-15-departamentos/'},
+  {l:'Nota oficial — segunda votación (63-0-17)', u:'https://comunicaciones.congreso.gob.pe/noticias/en-segunda-votacion-aprueban-iniciativa-que-crea-20-universidades-publicas-en-diversos-departamentos/'},
+  {l:'Nota oficial — promulgación por el Congreso', u:'https://comunicaciones.congreso.gob.pe/noticias/presidente-del-congreso-promulga-autografa-de-ley-que-autoriza-crear-universidades-en-15-departamentos/'},
+  {l:'Gestión — recuento de la ola de creación 2025–2026', u:'https://gestion.pe/economia/congreso-da-luz-verde-a-la-creacion-de-nuevas-universidades-publicas-se-suman-nueve-mas-en-cinco-regiones-noticia/'}],
+ analisis:[
+  {who:'Sustentación oficial (Comisión de Educación)', u:'https://comunicaciones.congreso.gob.pe/noticias/aprueban-dictamen-de-insistencia-que-plantea-crear-universidades-nacionales-en-15-departamentos/', s:'Cierre de brechas de acceso: más de 400 mil egresados anuales de básica y solo 3 de cada 10 continúan estudios; enmarcada en la Política Nacional de Educación Superior y recomendaciones de CEPLAN. Posición favorable registrada.'},
+  {who:'Objeción interna registrada (R. Kamiche, APP)', u:'https://comunicaciones.congreso.gob.pe/noticias/aprueban-dictamen-de-insistencia-que-plantea-crear-universidades-nacionales-en-15-departamentos/', s:'Universidades existentes arrastran déficits financieros y limitaciones de infraestructura e investigación: "¿por qué no repotenciar las existentes en lugar de vender humo?". Refleja el argumento central de la observación del Ejecutivo.'},
+  {who:'Gestión — dimensión agregada', u:'https://gestion.pe/economia/congreso-da-luz-verde-a-la-creacion-de-nuevas-universidades-publicas-se-suman-nueve-mas-en-cinco-regiones-noticia/', s:'Efecto observado: ~40 universidades creadas por ley en 2025 y 16 en 2026 — la magnitud convierte casos individuales en un cambio de régimen de facto sobre la oferta pública universitaria.'}],
+ interp:'Ficha representativa de la tercera fase del eje educación: la expansión de oferta por ley, en volumen inédito y en año electoral, desplaza en la práctica el principio de creación condicionada a factibilidad de la Ley 30220. La clasificación queda ambigua porque el criterio de acceso y el de sostenibilidad del sistema apuntan en direcciones opuestas; el indicador que resolverá la disputa es empírico y verificable: el resultado del licenciamiento de estas universidades bajo la SUNEDU posterior a la Ley 31520.'
+},
+];
+
+/* ---------- Render ---------- */
+const listEl=document.getElementById('list'), emptyEl=document.getElementById('empty'), countEl=document.getElementById('count');
+const state={q:'',temas:new Set(),dirs:new Set(),consts:new Set(),bancadas:new Set(),tipo:'',periodo:''};
+
+const sello=s=>({hecho:'<span class="sello hecho">Hecho verificado</span>',pend:'<span class="sello pend">Por verificar</span>',falta:'<span class="sello falta">No disponible</span>'}[s]||'');
+
+function ficha(n){
+  const constTag = n.constit ? `<span class="tag const">${n.constit.tipo==='reforma'?'§ Reforma constitucional':'§ Incidencia constitucional'}</span>` : '';
+  const tags=n.temas.map(t=>`<span class="tag ${t}">${T[t]}</span>`).join('')+constTag+
+    `<span class="tag ${n.dir==='debilita'?'dir-d':n.dir==='fortalece'?'dir-f':'dir-a'}">${n.dir==='debilita'?'▼ debilita':n.dir==='fortalece'?'▲ fortalece':'◆ ambiguo'}</span>`;
+  const constRow = n.constit ? `<div class="frow"><div class="k">Alcance constitucional</div><div>${sello('hecho')} ${n.constit.txt}</div></div>` : '';
+  return `<article class="ficha" data-dir="${n.dir}" id="${n.id}">
+    <div class="f-head" role="button" tabindex="0" aria-expanded="false">
+      <div>
+        <div class="f-num">${n.numero} · <span class="tipo">${n.tipo}</span></div>
+        <div class="f-title">${n.nombre}</div>
+        <div class="f-tags">${tags}</div>
+      </div>
+      <div class="f-date"><b>${n.fecha}</b>${n.fechaS==='pend'?'<span class="sello pend" style="margin-top:4px;display:inline-block">verificar</span>':'El Peruano'}<div class="f-toggle">+</div></div>
+    </div>
+    <div class="f-body">
+      <div class="frow"><div class="k">Periodo / órgano</div><div>${sello('hecho')} ${n.periodoTxt}</div></div>
+      <div class="frow"><div class="k">Sumilla</div><div>${n.sumilla}</div></div>
+      <div class="frow"><div class="k">Disposiciones centrales</div><div><ul>${n.articulos.map(a=>`<li>${a}</li>`).join('')}</ul></div></div>
+      ${constRow}
+      <div class="frow"><div class="k">Estado / vigencia real</div><div>${n.estado}</div></div>
+      <div class="frow"><div class="k">Clasificación §5 <span class="sello interp">Interpretación</span></div><div>${n.criterios.map(c=>`<div class="crit"><div class="c-name">${c.c}</div>${c.d}</div>`).join('')}</div></div>
+      <div class="frow"><div class="k">Votación (§6)</div><div>${n.bancadas&&n.bancadas.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px">${n.bancadas.map(b=>`<span class="tag" style="background:var(--paper);color:var(--ink);border:1px solid var(--line)">✓ ${P[b]||b}</span>`).join('')}<span class="sello pend" style="font-size:8.5px">a favor s/ fuentes citadas — confirmar en SIL</span></div>`:''}${sello(n.votacion.s)} ${n.votacion.txt}</div></div>
+      <div class="frow"><div class="k">Promotores / bancadas</div><div>${sello(n.promotores.s)} ${n.promotores.txt}</div></div>
+      <div class="frow"><div class="k">Control constitucional (TC / Corte IDH)</div><div class="tc-block">${sello(n.tc.s)} ${n.tc.txt}</div></div>
+      <div class="frow"><div class="k">Fuentes primarias</div><div class="f-links">${n.fuentes.map(f=>`<a href="${f.u}" target="_blank" rel="noopener">${f.l} ↗</a>`).join('')}</div></div>
+      <div class="frow"><div class="k">Análisis técnicos</div><div>${n.analisis.map(a=>`<div class="analisis-item"><span class="who"><a href="${a.u}" target="_blank" rel="noopener">${a.who} ↗</a></span><div>${a.s}</div></div>`).join('')}</div></div>
+      <div class="interp-block"><span class="sello interp">Interpretación / análisis</span> ${n.interp}</div>
+    </div>
+  </article>`;
+}
+
+function apply(){
+  const q=state.q.toLowerCase();
+  let shown=0;
+  const html=DB.filter(n=>{
+    if(state.periodo && n.periodo!==state.periodo) return false;
+    if(state.tipo && n.tipo!==state.tipo) return false;
+    if(state.temas.size && !n.temas.some(t=>state.temas.has(t))) return false;
+    if(state.dirs.size && !state.dirs.has(n.dir)) return false;
+    if(state.consts.size){ if(!n.constit || !state.consts.has(n.constit.tipo)) return false; }
+    if(state.bancadas.size){ if(!n.bancadas || !n.bancadas.some(b=>state.bancadas.has(b))) return false; }
+    if(q){const hay=(n.numero+' '+n.nombre+' '+n.sumilla+' '+n.interp+' '+(n.constit?n.constit.txt:'')+' '+n.tc.txt).toLowerCase(); if(!hay.includes(q)) return false;}
+    return true;
+  }).map(n=>{shown++;return ficha(n);}).join('');
+  listEl.innerHTML=html;
+  emptyEl.style.display=shown?'none':'block';
+  countEl.textContent=`${shown} de ${DB.length} fichas visibles`;
+  listEl.querySelectorAll('.f-head').forEach(h=>{
+    const open=()=>{const f=h.closest('.ficha');f.classList.toggle('open');const o=f.classList.contains('open');h.setAttribute('aria-expanded',o);h.querySelector('.f-toggle').textContent=o?'–':'+';};
+    h.addEventListener('click',open);
+    h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+  });
+}
+
+function chipHandler(sel, setName, attr){
+  document.querySelectorAll(sel).forEach(c=>{
+    const t=()=>{const v=c.dataset[attr];c.classList.toggle('on');c.classList.contains('on')?state[setName].add(v):state[setName].delete(v);apply();};
+    c.addEventListener('click',t);c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+  });
+}
+document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value;apply();});
+document.getElementById('tipoSel').addEventListener('change',e=>{state.tipo=e.target.value;apply();});
+chipHandler('#temaChips .chip','temas','k');
+chipHandler('#dirChips .chip','dirs','d');
+chipHandler('#constChips .chip','consts','c');
+chipHandler('#bancadaChips .chip','bancadas','b');
+document.querySelectorAll('.p-cell').forEach(p=>{
+  const t=()=>{const v=p.dataset.p;const was=p.classList.contains('active');document.querySelectorAll('.p-cell').forEach(x=>x.classList.remove('active'));state.periodo=was?'':(p.classList.add('active'),v);apply();};
+  p.addEventListener('click',t);p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t();}});
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  state.q='';state.temas.clear();state.dirs.clear();state.consts.clear();state.bancadas.clear();state.tipo='';state.periodo='';
+  document.getElementById('q').value='';document.getElementById('tipoSel').value='';
+  document.querySelectorAll('.chip.on').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.p-cell.active').forEach(c=>c.classList.remove('active'));
+  apply();
+});
+apply();
+</script>
+</body>
+</html>
