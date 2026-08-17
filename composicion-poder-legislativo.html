@@ -1,0 +1,5554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Composición y Poder Legislativo — Congreso del Perú</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F3; --panel:#FFFFFF; --ink:#1B2330; --ink-2:#4A5568; --line:#D8DCD6;
+  --sello:#A6191E;
+  --dem:#2F5D8C; --seg:#8C2F39; --reg:#5B5EA6; --edu:#2E6B4F; --jus:#7A5210;
+  --ok:#1E7A46; --warn:#9A6708; --miss:#8A8F98;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --disp:'Archivo',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+a{color:var(--dem)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--dem);outline-offset:2px}
+
+header{border-bottom:3px double var(--ink);background:var(--panel)}
+.h-wrap{max-width:1180px;margin:0 auto;padding:26px 22px 18px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sello)}
+.kicker a{color:var(--sello);text-decoration:none;border-bottom:1px dotted var(--sello)}
+h1{font-family:var(--disp);font-variation-settings:'wdth' 112;font-weight:800;font-size:clamp(24px,3.6vw,38px);line-height:1.05;margin:.35em 0 .3em}
+.sub{color:var(--ink-2);max-width:80ch}
+.h-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.h-meta span{font-family:var(--mono);font-size:11px;border:1px solid var(--line);padding:3px 8px;background:var(--paper)}
+
+.tabs{max-width:1180px;margin:18px auto 0;padding:0 22px;display:flex;gap:0;border-bottom:1px solid var(--line)}
+.tab{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:12px 18px;cursor:pointer;border-bottom:3px solid transparent;color:var(--ink-2)}
+.tab.active{color:var(--ink);border-bottom-color:var(--sello);font-weight:600}
+.tab:hover{color:var(--ink)}
+
+.wrap{max-width:1180px;margin:22px auto 80px;padding:0 22px}
+.screen{display:none}
+.screen.active{display:block}
+
+/* ===== Pantalla 1 — vista por Congreso ===== */
+.cong-select{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.cong-btn{font-family:var(--mono);font-size:12px;padding:9px 16px;border:1px solid var(--ink);background:var(--panel);cursor:pointer}
+.cong-btn.active{background:var(--ink);color:#fff}
+
+.box{background:var(--panel);border:1px solid var(--line);padding:18px;margin-bottom:16px}
+.box h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:14px}
+.fuente-nota{font-family:var(--mono);font-size:10.5px;color:var(--ink-2);margin-top:10px;padding-top:10px;border-top:1px dotted var(--line)}
+.limitacion{background:#FBF3E3;border-left:3px solid var(--warn);padding:9px 12px;font-size:12.5px;color:#5A4413;margin-bottom:14px}
+
+.bancada-row{display:grid;grid-template-columns:150px 1fr 60px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dotted var(--line)}
+.bancada-row:last-child{border-bottom:0}
+.bancada-nombre{font-size:13px}
+.bancada-nombre b{font-family:var(--mono);font-size:11px;color:var(--ink-2);display:block}
+.bar-compare{display:flex;flex-direction:column;gap:3px}
+.bar-track{height:9px;background:#EEF0EA;position:relative;overflow:hidden}
+.bar-fill{height:100%;position:absolute;left:0;top:0}
+.bar-fill.escanos{background:var(--miss)}
+.bar-fill.poder{background:var(--sello)}
+.bar-label{font-family:var(--mono);font-size:9px;color:var(--ink-2)}
+.bancada-pct{font-family:var(--mono);font-size:12px;text-align:right}
+.legend-mini{display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--ink-2);margin-bottom:10px}
+.legend-mini span::before{content:'';display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:middle}
+.legend-mini .le-escanos::before{background:var(--miss)}
+.legend-mini .le-poder::before{background:var(--sello)}
+
+/* ===== Pantalla 2 — vista por norma ===== */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{font-family:var(--mono);font-size:11px;padding:5px 10px;border:1px solid var(--line);background:var(--panel);cursor:pointer;user-select:none}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.ficha{background:var(--panel);border:1px solid var(--line);margin-bottom:10px}
+.f-head{padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.f-num{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.f-title{font-size:14.5px;margin-top:3px;font-weight:600}
+.f-badges{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:9.5px;padding:2px 7px;border:1px solid var(--line);color:var(--ink-2)}
+.tag.dir-d{color:#fff;background:var(--sello);border-color:var(--sello)}
+.tag.dir-f{color:#fff;background:var(--ok);border-color:var(--ok)}
+.tag.dir-a{color:#fff;background:var(--warn);border-color:var(--warn)}
+.f-toggle{font-family:var(--mono);font-size:16px;color:var(--ink-2);flex:0 0 auto}
+.f-body{display:none;padding:0 16px 16px;border-top:1px dotted var(--line)}
+.ficha.open .f-body{display:block}
+.ficha.open .f-toggle{transform:rotate(45deg)}
+
+.badge-row{display:grid;grid-template-columns:150px 100px 1fr;gap:8px;align-items:center;padding:6px 0;font-size:12.5px}
+.badge-row .bn{font-family:var(--mono);font-size:11px}
+.badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border:1px solid var(--line);display:inline-block}
+.badge.si{color:var(--ok);border-color:var(--ok)}
+.badge.no{color:var(--sello);border-color:var(--sello)}
+.badge.pend{color:var(--miss);border-color:var(--miss)}
+.decisiva-yes{color:var(--sello);font-weight:600}
+.decisiva-no{color:var(--ink-2)}
+.link-back{font-family:var(--mono);font-size:11px;margin-top:10px;display:inline-block}
+.no-tabla{font-size:12.5px;color:var(--ink-2);padding:14px 0;font-style:italic}
+.empty{text-align:center;padding:40px 0;color:var(--ink-2);font-size:13px}
+
+@media(max-width:640px){
+  .h-wrap{padding:18px 16px 14px}
+  h1{font-size:23px}
+  .wrap{padding:0 14px}
+  .bancada-row{grid-template-columns:1fr;gap:4px}
+  .bancada-pct{text-align:left}
+  .badge-row{grid-template-columns:1fr;gap:2px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-wrap">
+    <div class="kicker"><a href="index.html">← Portal</a> · <a href="observatorio-normativo-peru.html">Observatorio Normativo →</a> · módulo 2 de 2 · borrador v0.1</div>
+    <h1>Composición y Poder Legislativo</h1>
+    <p class="sub">El rol de las bancadas en el resultado final de las 29 normas del observatorio: qué tan indispensable era cada bancada por su tamaño (poder estructural) y si su voto efectivamente decidió cada votación (decisividad real). Datos derivados de fuentes ya citadas en las fichas del observatorio — ninguna cifra nueva se estima.</p>
+    <div class="h-meta">
+      <span>Poder estructural: índice de Banzhaf sobre escaños de origen (JNE)</span>
+      <span>Decisividad: cálculo directo sobre tablas de votación ya verificadas</span>
+      <span id="metaEstado">Borrador — transfuguismo pendiente de segunda pasada</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-screen="congreso">Vista por Congreso</div>
+  <div class="tab" data-screen="norma">Vista por norma decisiva</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== PANTALLA 1 ===== -->
+  <section class="screen active" id="screen-congreso">
+    <div class="limitacion">
+      <b>Limitación declarada:</b> la composición se ajusta por transfuguismo solo donde hay un evento con fecha exacta verificada (ver lista abajo). Para las leyes posteriores a feb-2024, o donde la tabla de votación usa una bancada nueva no incluida aún en este modelo (ej. Bloque Magisterial, Perú Bicentenario, Cambio Democrático–JPP), se usa la composición de origen sin ajustar — cada ficha lo declara explícitamente.
+    </div>
+    <details class="box" style="cursor:pointer">
+      <summary style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)">Eventos de transfuguismo aplicados (Congreso 2021-2026)</summary>
+      <div id="transfListado" style="margin-top:12px"></div>
+    </details>
+
+    <div class="cong-select" id="congSelect"></div>
+
+    <details class="box" style="cursor:pointer">
+      <summary style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)">¿Qué es el índice de Banzhaf y para qué sirve aquí? (nota metodológica)</summary>
+      <div style="margin-top:14px;font-size:13.5px;line-height:1.65">
+        <p><b>Qué mide.</b> El índice de Banzhaf no mide cuántos escaños tiene una bancada — mide cuán <i>indispensable</i> es esa bancada para formar una mayoría, dada la composición completa del Congreso. Una bancada pequeña puede ser muy poderosa si su voto suele ser el que decide el resultado; una bancada grande puede tener poco poder real si el resto ya alcanza mayoría sin ella.</p>
+        <p><b>Cómo se calcula.</b> Se examinan todas las combinaciones posibles de bancadas que juntas alcanzan el umbral de mayoría (en este módulo, mayoría simple: la mitad de los escaños totales más uno). Una bancada es "crítica" en una combinación si, al retirarla, esa combinación deja de alcanzar la mayoría. El índice de poder de una bancada es la proporción de combinaciones ganadoras en las que fue crítica, sobre el total de veces que alguna bancada fue crítica en todas las combinaciones. El resultado es un número entre 0% (nunca indispensable) y 100% (indispensable en todas las combinaciones ganadoras — típicamente el caso de una bancada con mayoría absoluta por sí sola).</p>
+        <p><b>Qué NO mide.</b> Es poder <i>estructural</i> o <i>potencial</i> — calculado solo a partir de cuántos escaños tiene cada bancada, sin mirar cómo votó realmente en ninguna norma. No indica si la bancada usó ese poder, ni en qué dirección. Para eso está la Capa B de este módulo (decisividad real, en la pestaña "Vista por norma decisiva"), que sí mira los votos efectivos en cada ley.</p>
+        <p><b>Por qué este método y no otro.</b> Es un estándar de la ciencia política para medir poder en sistemas de votación ponderada, no una construcción propia del proyecto. Referencia: Felsenthal, D. S. &amp; Machover, M. (1998), <i>The Measurement of Voting Power</i>. Se eligió por ser reproducible por un tercero a partir de datos públicos (composición de escaños), sin ningún juicio de valor ni clasificación política de por medio.</p>
+        <p><b>Limitación declarada.</b> El cálculo usa la composición <i>de origen</i> (proclamación JNE), sin ajuste por transfuguismo salvo donde se indique explícitamente lo contrario en la ficha de la norma. Ver nota amarilla arriba.</p>
+      </div>
+    </details>
+
+    <div class="box">
+      <h3>Escaños de origen vs. poder estructural (índice de Banzhaf)</h3>
+      <div class="legend-mini"><span class="le-escanos">% de escaños</span><span class="le-poder">% de poder (Banzhaf)</span></div>
+      <div id="bancadasList"></div>
+      <div class="fuente-nota" id="congFuente"></div>
+    </div>
+  </section>
+
+  <!-- ===== PANTALLA 2 ===== -->
+  <section class="screen" id="screen-norma">
+    <div class="filters" id="temaFilters"></div>
+    <div class="filters" id="decisivaFilter"></div>
+    <div id="normaList"></div>
+    <div class="empty" id="normaEmpty" style="display:none">Ninguna norma coincide con el filtro seleccionado.</div>
+  </section>
+
+</div>
+
+<script>
+/* ===== DATA (generada desde el observatorio, copiada no recalculada) ===== */
+const LEYES = [
+ {
+  "id": "dl25475",
+  "numero": "Decreto Ley N.º 25475",
+  "nombre": "Penalidad para los delitos de terrorismo y los procedimientos para la investigación, la instrucción y el juicio",
+  "fecha": "06/05/1992",
+  "temas": [
+   "seg"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Gobierno de Emergencia y Reconstrucción Nacional (abr–nov 1992) — poder ejecutivo de facto, sin Congreso",
+  "promotorBancada": "Poder Ejecutivo (gobierno de A. Fujimori, periodo de facto). No presentar como \"ley del Congreso\".",
+  "eventos": null
+ },
+ {
+  "id": "l26479",
+  "numero": "Leyes N.º 26479 y N.º 26492",
+  "nombre": "Ley de amnistía a militares, policías y civiles (26479) y ley interpretativa que la blinda de revisión judicial (26492)",
+  "fecha": "15/06/1995 y 02/07/1995",
+  "temas": [
+   "seg",
+   "jus",
+   "dem"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso Constituyente Democrático (CCD) — ambas anteriores al 28/07/1995, fecha de instalación del Congreso ordinario 1995–2000",
+  "promotorBancada": "Aprobación impulsada por la mayoría oficialista Cambio 90–Nueva Mayoría según la historiografía del periodo (fuente secundaria; autoría formal por confirmar en archivo).",
+  "eventos": null
+ },
+ {
+  "id": "l26657",
+  "numero": "Ley N.º 26657",
+  "nombre": "Ley de Interpretación Auténtica del artículo 112 de la Constitución (habilitación de la segunda reelección de A. Fujimori)",
+  "fecha": "23/08/1996",
+  "temas": [
+   "dem"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso ordinario 1995–2000 (mayoría Cambio 90–Nueva Mayoría)",
+  "promotorBancada": "Impulsada por la mayoría oficialista Cambio 90–Nueva Mayoría según la historiografía del periodo (fuente secundaria; autoría formal por confirmar en archivo).",
+  "eventos": null
+ },
+ {
+  "id": "l28094",
+  "numero": "Ley N.º 28094",
+  "nombre": "Ley de Partidos Políticos (hoy Ley de Organizaciones Políticas)",
+  "fecha": "01/11/2003",
+  "temas": [
+   "dem"
+  ],
+  "dir": "fortalece",
+  "periodoTxt": "Congreso 2001–2006 (transición democrática)",
+  "promotorBancada": "Autor principal: Henry Pease García (Perú Posible).",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Título I (definiciones generales, arts. 1 y 2)",
+    "organo": "Pleno",
+    "fecha": "11/09/2003",
+    "resultado": "aprobada",
+    "total": {
+     "si": 74,
+     "no": 0,
+     "abst": 5
+    },
+    "bancadas": {
+     "PP": {
+      "si": 28,
+      "no": 0,
+      "abst": 1
+     },
+     "PAP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "UN": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "FIM": {
+      "si": 6,
+      "no": 0,
+      "abst": 2
+     },
+     "SAU": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "GPDI": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "PA": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 11/09/2003, extracción de texto completo — expediente SIL 2001/168"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Artículo 17 (regulación de democracia interna)",
+    "organo": "Pleno",
+    "fecha": "25/09/2003",
+    "resultado": "aprobada",
+    "total": {
+     "si": 57,
+     "no": 12,
+     "abst": 8
+    },
+    "bancadas": {
+     "PP": {
+      "si": 18,
+      "no": 5,
+      "abst": 2
+     },
+     "PAP": {
+      "si": 19,
+      "no": 0,
+      "abst": 0
+     },
+     "UN": {
+      "si": 5,
+      "no": 0,
+      "abst": 1
+     },
+     "FIM": {
+      "si": 5,
+      "no": 2,
+      "abst": 2
+     },
+     "SAU": {
+      "si": 5,
+      "no": 0,
+      "abst": 2
+     },
+     "GPDI": {
+      "si": 2,
+      "no": 3,
+      "abst": 0
+     },
+     "PA": {
+      "si": 2,
+      "no": 1,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 25/09/2003, extracción de texto completo — expediente SIL 2001/168"
+   },
+   {
+    "tipo": "primera",
+    "etiqueta": "Artículo 30",
+    "organo": "Pleno",
+    "fecha": "02/10/2003",
+    "resultado": "aprobada",
+    "total": {
+     "si": 53,
+     "no": 17,
+     "abst": 20
+    },
+    "bancadas": {
+     "PP": {
+      "si": 22,
+      "no": 4,
+      "abst": 3
+     },
+     "PAP": {
+      "si": 20,
+      "no": 0,
+      "abst": 3
+     },
+     "UN": {
+      "si": 0,
+      "no": 10,
+      "abst": 2
+     },
+     "FIM": {
+      "si": 1,
+      "no": 0,
+      "abst": 4
+     },
+     "SAU": {
+      "si": 5,
+      "no": 0,
+      "abst": 4
+     },
+     "GPDI": {
+      "si": 1,
+      "no": 3,
+      "abst": 3
+     },
+     "PA": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 02/10/2003 — expediente SIL 2001/168"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Artículos 28, 29 y 36 inciso A) — primer intento",
+    "organo": "Pleno",
+    "fecha": "09/10/2003, 10:50am",
+    "resultado": "empate",
+    "total": {
+     "si": 37,
+     "no": 37,
+     "abst": 15
+    },
+    "bancadas": {
+     "PP": {
+      "si": 25,
+      "no": 2,
+      "abst": 5
+     },
+     "PAP": {
+      "si": 0,
+      "no": 20,
+      "abst": 0
+     },
+     "UN": {
+      "si": 1,
+      "no": 6,
+      "abst": 1
+     },
+     "FIM": {
+      "si": 2,
+      "no": 3,
+      "abst": 4
+     },
+     "SAU": {
+      "si": 4,
+      "no": 0,
+      "abst": 4
+     },
+     "GPDI": {
+      "si": 1,
+      "no": 4,
+      "abst": 1
+     },
+     "PA": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 09/10/2003, 10:50am — expediente SIL 2001/168"
+   },
+   {
+    "tipo": "reconsideracion",
+    "etiqueta": "Rectificación de la votación de los Arts. 28, 29 y 36 inciso A)",
+    "organo": "Pleno",
+    "fecha": "09/10/2003, 10:55am",
+    "resultado": "aprobada",
+    "total": {
+     "si": 44,
+     "no": 43,
+     "abst": 5
+    },
+    "bancadas": {
+     "PP": {
+      "si": 28,
+      "no": 2,
+      "abst": 2
+     },
+     "PAP": {
+      "si": 0,
+      "no": 20,
+      "abst": 0
+     },
+     "UN": {
+      "si": 1,
+      "no": 9,
+      "abst": 0
+     },
+     "FIM": {
+      "si": 4,
+      "no": 4,
+      "abst": 1
+     },
+     "SAU": {
+      "si": 6,
+      "no": 0,
+      "abst": 2
+     },
+     "GPDI": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "PA": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 09/10/2003, 10:55am — expediente SIL 2001/168. Revierte el resultado empatado del intento anterior."
+   }
+  ]
+ },
+ {
+  "id": "l30077",
+  "numero": "Ley N.º 30077",
+  "nombre": "Ley contra el Crimen Organizado",
+  "fecha": "20/08/2013",
+  "temas": [
+   "seg"
+  ],
+  "dir": "fortalece",
+  "periodoTxt": "Congreso 2011–2016",
+  "promotorBancada": "Proyecto de origen presentado por el Poder Ejecutivo (PL 01833/2012-PE), sin autor congresal individual. Dictamen impulsado por la Comisión de Justicia y Derechos Humanos, presidid",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto original)",
+    "organo": "Pleno",
+    "fecha": "16/07/2013",
+    "resultado": "aprobada",
+    "total": {
+     "si": 70,
+     "no": 0,
+     "abst": 7
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 25,
+      "no": 0,
+      "abst": 4
+     },
+     "GPFP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "PP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AGC": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "SN": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "CP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 5,
+      "no": 0,
+      "abst": 2
+     },
+     "NOAG": {
+      "si": 0,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/07/2013 (34510-34517-02) — expediente SIL 2012/1833"
+   },
+   {
+    "tipo": "reconsideracion",
+    "etiqueta": "Reconsideración — abre paso al texto modificado",
+    "organo": "Pleno",
+    "fecha": "17/07/2013, 20:20h",
+    "resultado": "aprobada",
+    "total": {
+     "si": 96,
+     "no": 0,
+     "abst": 0
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 32,
+      "no": 0,
+      "abst": 0
+     },
+     "GPFP": {
+      "si": 30,
+      "no": 0,
+      "abst": 0
+     },
+     "PP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AGC": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "SN": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "CP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "NOAG": {
+      "si": 0,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/07/2013 (34603-34619-02) — expediente SIL 2012/1833"
+   },
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto modificado) — la decisiva",
+    "organo": "Pleno",
+    "fecha": "17/07/2013, 20:28h",
+    "resultado": "aprobada",
+    "total": {
+     "si": 92,
+     "no": 1,
+     "abst": 0
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 32,
+      "no": 0,
+      "abst": 0
+     },
+     "GPFP": {
+      "si": 26,
+      "no": 0,
+      "abst": 0
+     },
+     "PP": {
+      "si": 12,
+      "no": 0,
+      "abst": 0
+     },
+     "AGC": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "SN": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "CP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "NOAG": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/07/2013 (34603-34620-03) — expediente SIL 2012/1833"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación (texto modificado)",
+    "organo": "Pleno",
+    "fecha": "17/07/2013, 20:32h",
+    "resultado": "aprobada",
+    "total": {
+     "si": 66,
+     "no": 25,
+     "abst": 2
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 32,
+      "no": 0,
+      "abst": 0
+     },
+     "GPFP": {
+      "si": 2,
+      "no": 25,
+      "abst": 1
+     },
+     "PP": {
+      "si": 12,
+      "no": 0,
+      "abst": 0
+     },
+     "AGC": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "SN": {
+      "si": 5,
+      "no": 0,
+      "abst": 1
+     },
+     "CP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "NOAG": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/07/2013 (34603-34621-02) — expediente SIL 2012/1833"
+   }
+  ]
+ },
+ {
+  "id": "l30220",
+  "numero": "Ley N.º 30220",
+  "nombre": "Ley Universitaria — creación de la SUNEDU",
+  "fecha": "09/07/2014",
+  "temas": [
+   "edu",
+   "reg"
+  ],
+  "dir": "fortalece",
+  "periodoTxt": "Congreso 2011–2016",
+  "promotorBancada": "Proyecto de origen presentado por el Poder Ejecutivo (PL 03505/2013-PE), sin autor congresal individual. El texto sustitutorio final fue sustentado por Daniel Mora Zevallos, presid",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación",
+    "organo": "Pleno",
+    "fecha": "26/06/2014",
+    "resultado": "aprobada",
+    "total": {
+     "si": 55,
+     "no": 45,
+     "abst": 3
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 35,
+      "no": 0,
+      "abst": 1
+     },
+     "GPFP": {
+      "si": 0,
+      "no": 29,
+      "abst": 0
+     },
+     "PP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "PPC-APP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "SN": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     },
+     "CP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "UR": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "NOAG": {
+      "si": 1,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 26/06/2014, 01:06pm — expediente SIL 2013/3505"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "26/06/2014, 01:09pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 54,
+     "no": 43,
+     "abst": 4
+    },
+    "bancadas": {
+     "NGP": {
+      "si": 35,
+      "no": 0,
+      "abst": 1
+     },
+     "GPFP": {
+      "si": 0,
+      "no": 27,
+      "abst": 0
+     },
+     "PP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "PPC-APP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "SN": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     },
+     "CP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "AP-FA": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "UR": {
+      "si": 3,
+      "no": 0,
+      "abst": 2
+     },
+     "NOAG": {
+      "si": 1,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 26/06/2014, 01:09pm — expediente SIL 2013/3505"
+   }
+  ]
+ },
+ {
+  "id": "l30904",
+  "numero": "Ley N.º 30904",
+  "nombre": "Reforma constitucional sobre la conformación y funciones de la Junta Nacional de Justicia",
+  "fecha": "10/01/2019",
+  "temas": [
+   "jus"
+  ],
+  "dir": "fortalece",
+  "periodoTxt": "Congreso 2016–2021 · reforma ratificada por referéndum (dic. 2018) tras el escándalo de los \"Cuellos Blancos del Puerto\"",
+  "promotorBancada": "Proyecto de origen presentado por el Poder Ejecutivo (gobierno de Martín Vizcarra), sin autor congresal individual — la iniciativa nace del propio Ejecutivo tras el escándalo de lo",
+  "eventos": [
+   {
+    "tipo": "reconsideracion",
+    "etiqueta": "Cuestión previa (Pariona Tarqui, votar el art. 155 por separado)",
+    "organo": "Pleno",
+    "fecha": "18/09/2018, 07:51pm",
+    "resultado": "rechazada",
+    "total": {
+     "si": 40,
+     "no": 68,
+     "abst": 1
+    },
+    "bancadas": {
+     "FP": {
+      "si": 0,
+      "no": 55,
+      "abst": 0
+     },
+     "PPK": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "NP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "FA": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     },
+     "CPA": {
+      "si": 1,
+      "no": 2,
+      "abst": 1
+     },
+     "NA": {
+      "si": 4,
+      "no": 8,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 18/09/2018, 07:51pm — expediente del PL 03159/2018-PE"
+   },
+   {
+    "tipo": "primera",
+    "etiqueta": "Reforma constitucional (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "18/09/2018, 07:55pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 109,
+     "no": 0,
+     "abst": 0
+    },
+    "bancadas": {
+     "FP": {
+      "si": 55,
+      "no": 0,
+      "abst": 0
+     },
+     "PPK": {
+      "si": 12,
+      "no": 0,
+      "abst": 0
+     },
+     "NP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "FA": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "CPA": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 13,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 18/09/2018, 07:55pm — expediente del PL 03159/2018-PE"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Remisión al Poder Ejecutivo para referéndum",
+    "organo": "Pleno",
+    "fecha": "04/10/2018, 01:52am",
+    "resultado": "aprobada",
+    "total": {
+     "si": 102,
+     "no": 0,
+     "abst": 0
+    },
+    "bancadas": {
+     "FP": {
+      "si": 52,
+      "no": 0,
+      "abst": 0
+     },
+     "PPK": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "FA": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "NP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "CPA": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 04/10/2018, 01:52am — expediente del PL 03159/2018-PE"
+   }
+  ]
+ },
+ {
+  "id": "l30916",
+  "numero": "Ley N.º 30916",
+  "nombre": "Ley Orgánica de la Junta Nacional de Justicia",
+  "fecha": "19/02/2019",
+  "temas": [
+   "jus"
+  ],
+  "dir": "fortalece",
+  "periodoTxt": "Congreso 2016–2021 · desarrolla la reforma constitucional de la Ley 30904",
+  "promotorBancada": "Proyecto de origen presentado por el Poder Ejecutivo (gobierno de Martín Vizcarra), igual que la reforma constitucional (Ley 30904) que desarrolla.",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (nuevo texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "01/02/2019",
+    "resultado": "aprobada",
+    "total": {
+     "si": 76,
+     "no": 15,
+     "abst": 0
+    },
+    "bancadas": {
+     "GPFP": {
+      "si": 38,
+      "no": 0,
+      "abst": 0
+     },
+     "PPK": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "NP": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "FA": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "GPC": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "CPA": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BL": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "UPR": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 01/02/2019 (folio 12439-17027-02043) — expediente del PL 03745/2018-PE"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "01/02/2019",
+    "resultado": "aprobada",
+    "total": {
+     "si": 75,
+     "no": 14,
+     "abst": 0
+    },
+    "bancadas": {
+     "GPFP": {
+      "si": 37,
+      "no": 0,
+      "abst": 0
+     },
+     "PPK": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "NP": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "FA": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "GPC": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "CPA": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BL": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "UPR": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 01/02/2019 (folio 12439-17032-02044) — expediente del PL 03745/2018-PE"
+   }
+  ]
+ },
+ {
+  "id": "l31355",
+  "numero": "Ley N.º 31355",
+  "nombre": "Ley que desarrolla el ejercicio de la cuestión de confianza",
+  "fecha": "21/10/2021",
+  "temas": [
+   "dem"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo y promulgada por el propio Congreso (oct. 2021)",
+  "promotorBancada": "Autores principales: Lady Mercedes Camones Soriano y Segundo Héctor Acuña Peralta (Alianza para el Progreso). Coautores: María Grimaneza Acuña Peralta, Cheryl Trigozo Reátegui, Elv",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Texto sustitutorio (primera votación)",
+    "organo": "Pleno",
+    "fecha": "16/09/2021, 07:54pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 74,
+     "no": 41,
+     "abst": 3
+    },
+    "bancadas": {
+     "PL": {
+      "si": 0,
+      "no": 34,
+      "abst": 0
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 14,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 15,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 2,
+      "no": 3,
+      "abst": 3
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/09/2021, 07:54pm — expediente SIL 2021/19"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "16/09/2021, 08:27pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 79,
+     "no": 40,
+     "abst": 0
+    },
+    "bancadas": {
+     "PL": {
+      "si": 0,
+      "no": 33,
+      "abst": 0
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 15,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 15,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 3,
+      "abst": 0
+     },
+     "POD": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/09/2021, 08:27pm — expediente SIL 2021/19"
+   },
+   {
+    "tipo": "insistencia",
+    "etiqueta": "Insistencia (autógrafa observada)",
+    "organo": "Pleno",
+    "fecha": "19/10/2021, 07:48pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 78,
+     "no": 43,
+     "abst": 3
+    },
+    "bancadas": {
+     "PL": {
+      "si": 0,
+      "no": 34,
+      "abst": 0
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 13,
+      "no": 1,
+      "abst": 1
+     },
+     "APP": {
+      "si": 14,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 3,
+      "abst": 2
+     },
+     "POD": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 19/10/2021, 07:48pm — expediente SIL 2021/19"
+   }
+  ]
+ },
+ {
+  "id": "l31399",
+  "numero": "Ley N.º 31399",
+  "nombre": "Ley que fortalece el proceso de aprobación de leyes de reforma constitucional (restricción del referéndum)",
+  "fecha": "30/01/2022",
+  "temas": [
+   "dem"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · promulgada por el propio Congreso",
+  "promotorBancada": "Autor principal: Hernando Guerra García Campos (Fuerza Popular). Coautores: Luis Arturo Alegría García, Rosangella Andrea Barbarán Reyes, Nilza Merly Chacón Trujillo.",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "16/12/2021, 02:52pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 76,
+     "no": 43,
+     "abst": 3
+    },
+    "bancadas": {
+     "PL": {
+      "si": 0,
+      "no": 33,
+      "abst": 0
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 13,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 13,
+      "no": 1,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 2,
+      "no": 1,
+      "abst": 1
+     },
+     "JP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/12/2021, 02:52pm — expediente SIL 2021/644"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "16/12/2021, 02:59pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 78,
+     "no": 41,
+     "abst": 3
+    },
+    "bancadas": {
+     "PL": {
+      "si": 1,
+      "no": 32,
+      "abst": 0
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 13,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 13,
+      "no": 0,
+      "abst": 2
+     },
+     "AVP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/12/2021, 02:59pm — expediente SIL 2021/644"
+   },
+   {
+    "tipo": "insistencia",
+    "etiqueta": "Insistencia (autógrafa observada)",
+    "organo": "Pleno",
+    "fecha": "21/01/2022, 06:22pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 71,
+     "no": 44,
+     "abst": 0
+    },
+    "bancadas": {
+     "PL": {
+      "si": 0,
+      "no": 28,
+      "abst": 0
+     },
+     "FP": {
+      "si": 23,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 12,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 13,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "PD": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "SP": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 21/01/2022, 06:22pm — expediente SIL 2021/644"
+   }
+  ]
+ },
+ {
+  "id": "l31520",
+  "numero": "Ley N.º 31520",
+  "nombre": "Ley que \"restablece la autonomía y la institucionalidad de las universidades peruanas\" (contrarreforma de la SUNEDU)",
+  "fecha": "21/07/2022",
+  "temas": [
+   "reg",
+   "edu"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo",
+  "promotorBancada": "Autor principal: Esdras Ricardo Medina Minaya (Renovación Popular). Coautores: Alejandro Muñante Barrios, José Ernesto Cueto Aservi, Miguel Ángel Ciccia Vásquez (el encabezado del ",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación",
+    "organo": "Pleno",
+    "fecha": "01/02/2022",
+    "resultado": "aprobada",
+    "total": {
+     "si": 69,
+     "no": 39,
+     "abst": 2
+    },
+    "bancadas": {
+     "PL": {
+      "si": 21,
+      "no": 7,
+      "abst": 1
+     },
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 5,
+      "no": 5,
+      "abst": 0
+     },
+     "APP": {
+      "si": 1,
+      "no": 12,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 4,
+      "no": 2,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "PD": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 2,
+      "abst": 0
+     },
+     "POD": {
+      "si": 2,
+      "no": 1,
+      "abst": 0
+     },
+     "JP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "NA": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 01/02/2022 — expediente SIL 2021/697 (sin correcciones manuales adicionales)"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "04/05/2022",
+    "resultado": "aprobada",
+    "total": {
+     "si": 68,
+     "no": 39,
+     "abst": 5
+    },
+    "bancadas": {
+     "PL": {
+      "si": 20,
+      "no": 5,
+      "abst": 3
+     },
+     "FP": {
+      "si": 19,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 11,
+      "no": 2,
+      "abst": 0
+     },
+     "APP": {
+      "si": 2,
+      "no": 11,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 2,
+      "no": 6,
+      "abst": 1
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "PD": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "SP": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "NA": {
+      "si": 3,
+      "no": 4,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 04/05/2022 — expediente SIL 2021/697 (sin correcciones manuales adicionales; resuelve una discrepancia de prensa: algunos medios reportaron \"69-39-2\", el documento oficial confirma 68-39-5)"
+   },
+   {
+    "tipo": "insistencia",
+    "etiqueta": "Insistencia (autógrafa observada)",
+    "organo": "Pleno",
+    "fecha": "13/07/2022",
+    "resultado": "aprobada",
+    "total": {
+     "si": 72,
+     "no": 39,
+     "abst": 4
+    },
+    "bancadas": {
+     "FP": {
+      "si": 24,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 12,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 8,
+      "no": 3,
+      "abst": 2
+     },
+     "APP": {
+      "si": 1,
+      "no": 10,
+      "abst": 0
+     },
+     "BM": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 1,
+      "no": 6,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "PD": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 2,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "PB": {
+      "si": 0,
+      "no": 3,
+      "abst": 2
+     },
+     "POD": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 13/07/2022 — expediente SIL 2021/697 (composición parlamentaria ya distinta a la de 2022, tras cambios de bancada; 72 votos alcanzó la mayoría absoluta requerida)"
+   }
+  ]
+ },
+ {
+  "id": "l31751",
+  "numero": "Ley N.º 31751",
+  "nombre": "Ley que modifica el Código Penal en materia de suspensión de la prescripción (\"Ley Soto\")",
+  "fecha": "25/05/2023",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · primera del paquete penal 2023–2025",
+  "promotorBancada": "Autor principal: Flavio Cruz Mamani (Perú Libre). Coautores: Waldemar José Cerrón Rojas, Américo Gonza Castillo, Kelly Roxana Portalatino Ávalos. El apodo de prensa \"Ley Soto\" (por",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación",
+    "organo": "Pleno",
+    "fecha": "13/04/2023",
+    "resultado": "aprobada",
+    "total": {
+     "si": 76,
+     "no": 19,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 16,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 14,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 11,
+      "no": 1,
+      "abst": 0
+     },
+     "APP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "BM": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 5,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 5,
+      "no": 0,
+      "abst": 1
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "SP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 13/04/2023 (23059-34372-05918) — expediente SIL 2022/3991"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "11/05/2023",
+    "resultado": "aprobada",
+    "total": {
+     "si": 87,
+     "no": 12,
+     "abst": 5
+    },
+    "bancadas": {
+     "FP": {
+      "si": 19,
+      "no": 0,
+      "abst": 1
+     },
+     "PL": {
+      "si": 13,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 12,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 3,
+      "no": 1,
+      "abst": 2
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 6,
+      "abst": 1
+     },
+     "POD": {
+      "si": 4,
+      "no": 1,
+      "abst": 0
+     },
+     "PB": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 7,
+      "no": 3,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 11/05/2023 (25068-36567-06077) — expediente SIL 2022/3991"
+   }
+  ]
+ },
+ {
+  "id": "l32104",
+  "numero": "Ley N.º 32104",
+  "nombre": "Ley que precisa la aplicación del párrafo segundo del artículo 84 del Código Penal, modificado por la Ley 31751",
+  "fecha": "28/07/2024",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · interpretación auténtica que blinda la Ley 31751 frente a una reinterpretación judicial",
+  "promotorBancada": "Autor principal: Flavio Cruz Mamani (Perú Libre) — el mismo autor de la Ley 31751 que esta norma blinda. Coautores: Waldemar José Cerrón Rojas, María Antonieta Agüero Gutiérrez, Ma",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación",
+    "organo": "Pleno",
+    "fecha": "30/05/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 59,
+     "no": 22,
+     "abst": 14
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 0,
+      "abst": 2
+     },
+     "BM": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 0,
+      "no": 3,
+      "abst": 3
+     },
+     "AP": {
+      "si": 2,
+      "no": 0,
+      "abst": 2
+     },
+     "PB": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 0,
+      "no": 1,
+      "abst": 2
+     },
+     "HyD": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 8,
+      "abst": 1
+     },
+     "NA": {
+      "si": 6,
+      "no": 5,
+      "abst": 3
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 30/05/2024 — expediente SIL 2023/6589"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Comisión Permanente",
+    "fecha": "04/07/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 17,
+     "no": 5,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "AP": {
+      "si": 1,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 0,
+      "no": 0,
+      "abst": 2
+     },
+     "PB": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" de la Comisión Permanente, 04/07/2024, firmada por Jaime Abensur Pinasco (Director General Parlamentario) — expediente SIL 2023/6589. Somos Perú y Unidad y Diálogo Parlamentario tuvieron representante presente pero sin voto registrado."
+   }
+  ]
+ },
+ {
+  "id": "l31990",
+  "numero": "Ley N.º 31990",
+  "nombre": "Ley que modifica el proceso especial de colaboración eficaz (arts. 473, 476-A y 481-A del Código Procesal Penal)",
+  "fecha": "21/03/2024",
+  "temas": [
+   "jus",
+   "seg"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · aprobada por insistencia tras observación del Ejecutivo; promulgada por el presidente del Congreso (A. Soto) el 19/03/2024",
+  "promotorBancada": "Iniciativa originada por María Teresa Cabrera Vega (Podemos Perú, congresista saliente); presentada formalmente el 26/10/2021 por la bancada Podemos Perú (autoría individual especí",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "22/06/2023, 10:52pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 83,
+     "no": 27,
+     "abst": 3
+    },
+    "bancadas": {
+     "FP": {
+      "si": 10,
+      "no": 11,
+      "abst": 0
+     },
+     "PL": {
+      "si": 10,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 7,
+      "no": 1,
+      "abst": 2
+     },
+     "CDJP": {
+      "si": 1,
+      "no": 9,
+      "abst": 0
+     },
+     "RP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 1
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 22/06/2023, 10:52pm — expediente SIL 2021/565"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "22/06/2023, 10:54pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 79,
+     "no": 23,
+     "abst": 5
+    },
+    "bancadas": {
+     "FP": {
+      "si": 7,
+      "no": 11,
+      "abst": 1
+     },
+     "PL": {
+      "si": 10,
+      "no": 2,
+      "abst": 1
+     },
+     "AP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 8,
+      "no": 0,
+      "abst": 2
+     },
+     "CDJP": {
+      "si": 1,
+      "no": 9,
+      "abst": 0
+     },
+     "RP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 1
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 22/06/2023, 10:54pm — expediente SIL 2021/565. Corrige el dato previo de la ficha (81-24-5), que provenía de un reporte de prensa (La República) sin verificación independiente contra la fuente primaria."
+   },
+   {
+    "tipo": "insistencia",
+    "etiqueta": "Insistencia (autógrafa observada)",
+    "organo": "Pleno",
+    "fecha": "14/12/2023, 08:51pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 88,
+     "no": 15,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "BM": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 1,
+      "abst": 0
+     },
+     "AP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "UDP": {
+      "si": 4,
+      "no": 1,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 6,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 14/12/2023, 08:51pm — expediente SIL 2021/565"
+   }
+  ]
+ },
+ {
+  "id": "l31988",
+  "numero": "Ley N.º 31988",
+  "nombre": "Ley de Reforma Constitucional que restablece la bicameralidad en el Congreso de la República",
+  "fecha": "20/03/2024",
+  "temas": [
+   "dem"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · rige desde las elecciones generales de 2026 (Congreso bicameral instalado en julio de 2026)",
+  "promotorBancada": "Autor principal: Alejandro Enrique Cavero Alva (Avanza País - Partido de Integración Social). Coautores: Norma Martina Yarrow Lumbreras, Adriana Josefina Tudela Gutiérrez, María Je",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "16/11/2023, 12:16pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 82,
+     "no": 28,
+     "abst": 1
+    },
+    "bancadas": {
+     "FP": {
+      "si": 19,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "APP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 1,
+      "no": 7,
+      "abst": 0
+     },
+     "BM": {
+      "si": 4,
+      "no": 4,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 1,
+      "no": 2,
+      "abst": 1
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "UDP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 7,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/11/2023, 12:16pm — expediente SIL 2021/660. El tablero (82-28-1) coincide exacto con el resultado final; la lista de \"votos expresados verbalmente\" del acta (Cavero Alva, Barbarán Reyes, Aguinaga Recuenco y otros 8) es constancia de asistencia, no una suma adicional a la cifra ya reflejada en el tablero."
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "06/03/2024, 01:14pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 87,
+     "no": 30,
+     "abst": 1
+    },
+    "bancadas": {
+     "FP": {
+      "si": 21,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 11,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 1,
+      "no": 8,
+      "abst": 0
+     },
+     "BM": {
+      "si": 5,
+      "no": 3,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 2,
+      "no": 2,
+      "abst": 1
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 12,
+      "no": 6,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/03/2024, 01:14pm — expediente SIL 2021/660"
+   }
+  ]
+ },
+ {
+  "id": "l32054",
+  "numero": "Ley N.º 32054",
+  "nombre": "Ley que excluye a los partidos políticos de las medidas penales aplicables a las personas jurídicas (no disolución judicial)",
+  "fecha": "10/06/2024",
+  "temas": [
+   "dem",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · promulgada por el Ejecutivo (edición extraordinaria de El Peruano)",
+  "promotorBancada": "Autor principal: Waldemar José Cerrón Rojas (Perú Libre). Coautores: María Antonieta Agüero Gutiérrez, Flavio Cruz Mamani, María Elizabeth Taipe Coronado.",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "10/05/2024, 11:47am",
+    "resultado": "aprobada",
+    "total": {
+     "si": 83,
+     "no": 14,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 21,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 9,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 1,
+      "abst": 0
+     },
+     "PB": {
+      "si": 2,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 3,
+      "abst": 2
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 10/05/2024, 11:47am — expediente SIL 2021/6084"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "10/05/2024, 11:50am",
+    "resultado": "aprobada",
+    "total": {
+     "si": 84,
+     "no": 15,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 21,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 9,
+      "abst": 0
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "PB": {
+      "si": 2,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 3,
+      "abst": 2
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 10/05/2024, 11:50am — expediente SIL 2021/6084"
+   }
+  ]
+ },
+ {
+  "id": "jnjmod",
+  "numero": "Ley N.º 32028",
+  "nombre": "Ley que modifica la Ley Orgánica de la Defensoría del Pueblo y, dentro de ella, la Secretaría Técnica de la Comisión Especial que selecciona a la JNJ",
+  "fecha": "17/05/2024",
+  "temas": [
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · aprobada tras la inhabilitación de los miembros titulares Inés Tello y Aldo Vásquez por el propio Congreso (mar. 2024)",
+  "promotorBancada": "Texto sustitutorio acumulado sobre tres proyectos: 2358/2021-CR (base del dictamen de la Comisión de Constitución), 3190/2022-CR — autor principal Alejandro Soto Reyes (Alianza par",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "04/04/2024, 07:14pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 72,
+     "no": 23,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 1,
+      "abst": 0
+     },
+     "APP": {
+      "si": 4,
+      "no": 5,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 5,
+      "abst": 1
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 4,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 2,
+      "no": 2,
+      "abst": 1
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 4,
+      "no": 6,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 04/04/2024, 07:14pm — expediente SIL 2022/3190. El tablero (72-23-2) coincide exacto con el resultado final declarado en el acta."
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "17/04/2024, 06:34pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 84,
+     "no": 14,
+     "abst": 3
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 8,
+      "no": 1,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 6,
+      "abst": 1
+     },
+     "POD": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 3,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 9,
+      "no": 3,
+      "abst": 2
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/04/2024, 06:34pm, firmada por el Director General Parlamentario — expediente SIL 2022/3190"
+   }
+  ]
+ },
+ {
+  "id": "l31981",
+  "numero": "Ley N.º 31981",
+  "nombre": "Ley que modifica la Ley 28094 sobre elecciones primarias",
+  "fecha": "18/01/2024",
+  "temas": [
+   "dem"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · en vigencia desde el 19/01/2024",
+  "promotorBancada": "Autora principal: María del Carmen Alva Prieto (Acción Popular). Coautores: Wilson Soto Palacios, Karol Ivett Paredes Fonseca, José Alberto Arriola Tueros, Silvia María Monteza Fac",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "14/12/2023, 06:27pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 70,
+     "no": 35,
+     "abst": 12
+    },
+    "bancadas": {
+     "FP": {
+      "si": 21,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 0,
+      "abst": 11
+     },
+     "APP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "BM": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "RP": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 1
+     },
+     "POD": {
+      "si": 5,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "UDP": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 8,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 14/12/2023, 06:27pm — expediente SIL 2022/3125"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "14/12/2023, 06:58pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 79,
+     "no": 34,
+     "abst": 4
+    },
+    "bancadas": {
+     "FP": {
+      "si": 21,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 8,
+      "no": 1,
+      "abst": 1
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 1,
+      "no": 7,
+      "abst": 0
+     },
+     "BM": {
+      "si": 0,
+      "no": 7,
+      "abst": 1
+     },
+     "RP": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 4,
+      "no": 2,
+      "abst": 0
+     },
+     "PB": {
+      "si": 1,
+      "no": 2,
+      "abst": 2
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "UDP": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 8,
+      "no": 8,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 14/12/2023, 06:58pm — expediente SIL 2022/3125"
+   }
+  ]
+ },
+ {
+  "id": "l32058",
+  "numero": "Ley N.º 32058",
+  "nombre": "Ley que modifica la Ley Orgánica de Elecciones y la Ley de Organizaciones Políticas para la \"optimización del proceso electoral\" 2026",
+  "fecha": "14/06/2024",
+  "temas": [
+   "dem"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026",
+  "promotorBancada": "Proyecto de origen (PL 04086/2022-JNE) presentado directamente por el Jurado Nacional de Elecciones, sin autor congresal individual — a diferencia de la mayoría de las leyes de est",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "10/05/2024, 12:10pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 72,
+     "no": 20,
+     "abst": 1
+    },
+    "bancadas": {
+     "FP": {
+      "si": 20,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 9,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PB": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 9,
+      "no": 2,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 10/05/2024, 12:10pm — expediente SIL 2022/4086"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "10/05/2024, 12:13pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 73,
+     "no": 19,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 20,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 8,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 2,
+      "no": 0,
+      "abst": 1
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "PB": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 9,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 10/05/2024, 12:13pm — expediente SIL 2022/4086"
+   }
+  ]
+ },
+ {
+  "id": "l32245",
+  "numero": "Ley N.º 32245",
+  "nombre": "Ley que adecúa la normativa electoral al proceso de elecciones del Congreso bicameral",
+  "fecha": "15/01/2025",
+  "temas": [
+   "dem"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · norma de implementación de la Ley 31988",
+  "promotorBancada": "Autores principales: Eduardo Salhuana Cavides y Nilza Merly Chacón Trujillo (grupo parlamentario \"Multipartidario\", correspondiente a la Mesa Directiva y otros congresistas de dist",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "04/12/2024, 01:18pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 61,
+     "no": 25,
+     "abst": 10
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 0,
+      "no": 11,
+      "abst": 0
+     },
+     "PL": {
+      "si": 1,
+      "no": 1,
+      "abst": 4
+     },
+     "RP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 2,
+      "no": 0,
+      "abst": 3
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 5,
+      "abst": 1
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 2,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 04/12/2024, 01:18pm — expediente SIL 2023/8014"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "11/12/2024, 01:05pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 73,
+     "no": 30,
+     "abst": 8
+    },
+    "bancadas": {
+     "FP": {
+      "si": 20,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 1,
+      "abst": 0
+     },
+     "POD": {
+      "si": 1,
+      "no": 10,
+      "abst": 2
+     },
+     "PL": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 4,
+      "no": 0,
+      "abst": 4
+     },
+     "AVP": {
+      "si": 5,
+      "no": 0,
+      "abst": 1
+     },
+     "JPVP": {
+      "si": 1,
+      "no": 6,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "BDP": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 4,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 11/12/2024, 01:05pm — expediente SIL 2023/8014"
+   }
+  ]
+ },
+ {
+  "id": "l32107",
+  "numero": "Ley N.º 32107",
+  "nombre": "Ley que precisa la aplicación y los alcances del delito de lesa humanidad y crímenes de guerra (\"ley de prescripción\")",
+  "fecha": "09/08/2024",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · dada por la Comisión Permanente y promulgada por el Congreso ante la no promulgación del Ejecutivo",
+  "promotorBancada": "Origen: PL 6951/2023-CR. Autores principales: Fernando Rospigliosi (Fuerza Popular) y José Cueto (Honor y Democracia); coautores: María Jáuregui, Miguel Ciccia y Alejandro Muñante ",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación",
+    "organo": "Pleno",
+    "fecha": "06/06/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 60,
+     "no": 36,
+     "abst": 11
+    },
+    "bancadas": {
+     "FP": {
+      "si": 22,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "BM": {
+      "si": 1,
+      "no": 6,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 0,
+      "no": 1,
+      "abst": 5
+     },
+     "SP": {
+      "si": 2,
+      "no": 0,
+      "abst": 1
+     },
+     "RP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 10,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 9,
+      "abst": 0
+     },
+     "PB": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 7,
+      "no": 5,
+      "abst": 4
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/06/2024 — expediente SIL 2023/6951"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Comisión Permanente",
+    "fecha": "04/07/2024, 10:48h",
+    "resultado": "aprobada",
+    "total": {
+     "si": 15,
+     "no": 12,
+     "abst": 0
+    },
+    "bancadas": {
+     "FP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 1,
+      "no": 1,
+      "abst": 0
+     },
+     "AP": {
+      "si": 1,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "BM": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "PB": {
+      "si": 0,
+      "no": 1,
+      "abst": 0
+     },
+     "UDP": {
+      "si": 0,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" de la Comisión Permanente, 04/07/2024 — expediente SIL 2023/6951"
+   }
+  ]
+ },
+ {
+  "id": "l32108",
+  "numero": "Ley N.º 32108",
+  "nombre": "Ley que modifica el Código Penal y la Ley contra el Crimen Organizado (redefinición de \"organización criminal\")",
+  "fecha": "09/08/2024",
+  "temas": [
+   "seg"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · origen: PL 5981-2023 (presentado sep. 2023)",
+  "promotorBancada": "Autor del proyecto de origen (PL 5981/2022-CR): Waldemar Cerrón Rojas (Perú Libre), confirmado directamente en el expediente del SIL (wb2server.congreso.gob.pe/spley-portal/#/exped",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "30/05/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 43,
+     "no": 13,
+     "abst": 32
+    },
+    "bancadas": {
+     "FP": {
+      "si": 5,
+      "no": 0,
+      "abst": 14
+     },
+     "PL": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "POD": {
+      "si": 4,
+      "no": 0,
+      "abst": 1
+     },
+     "BM": {
+      "si": 6,
+      "no": 0,
+      "abst": 2
+     },
+     "AVP": {
+      "si": 1,
+      "no": 0,
+      "abst": 5
+     },
+     "AP": {
+      "si": 1,
+      "no": 2,
+      "abst": 3
+     },
+     "PB": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "RP": {
+      "si": 0,
+      "no": 0,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 3,
+      "no": 2,
+      "abst": 6
+     }
+    },
+    "fuente": "PDF oficial \"VOTACIÓN\" del sistema digital del Pleno, 30/05/2024 — expediente SIL 2021/5981 (incluye corrección manual de la Presidencia sobre 9 congresistas)"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Comisión Permanente",
+    "fecha": "04/07/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 12,
+     "no": 3,
+     "abst": 9
+    },
+    "bancadas": {
+     "PL": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 1,
+      "no": 0,
+      "abst": 1
+     },
+     "UDP": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "CDJP": {
+      "si": 0,
+      "no": 1,
+      "abst": 1
+     },
+     "AP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "FP": {
+      "si": 0,
+      "no": 0,
+      "abst": 6
+     },
+     "PB": {
+      "si": 0,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta oficial de \"Asistencia y Votación\" de la Comisión Permanente, 04/07/2024, firmada por el Director General Parlamentario — expediente SIL 2021/5981"
+   }
+  ]
+ },
+ {
+  "id": "l32130",
+  "numero": "Ley N.º 32130",
+  "nombre": "Ley que modifica el Código Procesal Penal para trasladar peso de la investigación del delito a la Policía Nacional",
+  "fecha": "10/10/2024",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026",
+  "promotorBancada": "El texto sustitutorio fue sustentado en el Pleno por Isaac Mita Alanoca (Perú Libre), presidente de la Comisión de Justicia y Derechos Humanos, titular del dictamen que acumula los",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "22/08/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 71,
+     "no": 29,
+     "abst": 4
+    },
+    "bancadas": {
+     "FP": {
+      "si": 13,
+      "no": 1,
+      "abst": 0
+     },
+     "APP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 10,
+      "no": 2,
+      "abst": 0
+     },
+     "PL": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "RP": {
+      "si": 6,
+      "no": 1,
+      "abst": 0
+     },
+     "AP": {
+      "si": 3,
+      "no": 2,
+      "abst": 1
+     },
+     "BM": {
+      "si": 6,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 5,
+      "abst": 2
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 2,
+      "no": 3,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 22/08/2024, 06:19pm — expediente SIL 2023/6707 y 2022/5396"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "04/09/2024",
+    "resultado": "aprobada",
+    "total": {
+     "si": 72,
+     "no": 24,
+     "abst": 6
+    },
+    "bancadas": {
+     "FP": {
+      "si": 15,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 1
+     },
+     "POD": {
+      "si": 10,
+      "no": 0,
+      "abst": 1
+     },
+     "PL": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 7,
+      "no": 1,
+      "abst": 1
+     },
+     "AP": {
+      "si": 4,
+      "no": 2,
+      "abst": 0
+     },
+     "BM": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 4,
+      "no": 1,
+      "abst": 1
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 5,
+      "abst": 2
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 04/09/2024, 06:43pm — expediente SIL 2023/6707 y 2022/5396"
+   }
+  ]
+ },
+ {
+  "id": "l32138",
+  "numero": "Ley N.º 32138",
+  "nombre": "Ley que modifica la Ley 30077 modificada por la Ley 32108 (ajustes al régimen de crimen organizado)",
+  "fecha": "19/10/2024",
+  "temas": [
+   "seg"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · respuesta a la presión social (paros de transportistas contra la 32108)",
+  "promotorBancada": "Autor principal: Segundo Teodomiro Quiroz Barboza (Bloque Magisterial de Concertación Nacional). Coautores: Paul Silvio Gutiérrez Ticona, Alex Antonio Paredes Gonzales, Lucinda Vás",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "16/10/2024, 04:48pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 75,
+     "no": 21,
+     "abst": 8
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 1,
+      "abst": 0
+     },
+     "PL": {
+      "si": 8,
+      "no": 1,
+      "abst": 1
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 2,
+      "no": 2,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 2,
+      "no": 1,
+      "abst": 2
+     },
+     "BDP": {
+      "si": 0,
+      "no": 4,
+      "abst": 1
+     },
+     "NA": {
+      "si": 0,
+      "no": 2,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 16/10/2024, 04:48pm (folio 31289-46802-07844) — expediente SIL 2021/9055"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "16/10/2024, 04:53pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 70,
+     "no": 20,
+     "abst": 15
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 8,
+      "no": 1,
+      "abst": 0
+     },
+     "PL": {
+      "si": 8,
+      "no": 1,
+      "abst": 1
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 1,
+      "no": 0,
+      "abst": 6
+     },
+     "BM": {
+      "si": 2,
+      "no": 2,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 2
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 2,
+      "no": 1,
+      "abst": 2
+     },
+     "BDP": {
+      "si": 0,
+      "no": 4,
+      "abst": 1
+     },
+     "NA": {
+      "si": 0,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" de la exoneración, 16/10/2024, 04:53pm, firmada por Jaime Abensur Pinasco (Director General Parlamentario) — expediente SIL 2021/9055. Al exonerarse, no hubo segunda votación de texto."
+   }
+  ]
+ },
+ {
+  "id": "l32181",
+  "numero": "Ley N.º 32181",
+  "nombre": "Ley que restringe la detención preliminar judicial a los casos de flagrancia",
+  "fecha": "11/12/2024",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026",
+  "promotorBancada": "Autor principal: Américo Gonza Castillo (Perú Libre). Coautores: Flavio Cruz Mamani, Waldemar José Cerrón Rojas, Alfredo Pariona Sinche (el encabezado del SIL indicaba posibles coa",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "06/11/2024, 04:19pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 80,
+     "no": 16,
+     "abst": 3
+    },
+    "bancadas": {
+     "FP": {
+      "si": 16,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 9,
+      "no": 1,
+      "abst": 0
+     },
+     "PL": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 7,
+      "no": 1,
+      "abst": 0
+     },
+     "BM": {
+      "si": 4,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 1,
+      "no": 4,
+      "abst": 2
+     },
+     "SP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 1,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/11/2024, 04:19pm — expediente SIL 2021/3999"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Exoneración de la segunda votación",
+    "organo": "Pleno",
+    "fecha": "06/11/2024, 04:23pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 79,
+     "no": 18,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 15,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 9,
+      "no": 1,
+      "abst": 0
+     },
+     "PL": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 2,
+      "abst": 0
+     },
+     "BM": {
+      "si": 5,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 1,
+      "no": 4,
+      "abst": 2
+     },
+     "SP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/11/2024, 04:23pm — expediente SIL 2021/3999. Al exonerarse, la ley quedó aprobada sin necesidad de segunda votación de texto."
+   }
+  ]
+ },
+ {
+  "id": "l32182",
+  "numero": "Ley N.º 32182",
+  "nombre": "Ley que introduce faltas muy graves para jueces y fiscales por decisiones en medidas cautelares",
+  "fecha": "11/12/2024",
+  "temas": [
+   "jus",
+   "seg"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026",
+  "promotorBancada": "Autor principal: Alejandro Muñante Barrios (Renovación Popular). Coautores: Miguel Ángel Ciccia Vásquez, Jorge Arturo Zeballos Aponte, Cheryl Trigozo Reátegui (el encabezado del SI",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "11/10/2024, 09:55pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 71,
+     "no": 20,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 16,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 1
+     },
+     "PL": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 1,
+      "abst": 0
+     },
+     "BM": {
+      "si": 3,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 3,
+      "no": 0,
+      "abst": 1
+     },
+     "BDP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 11/10/2024, 09:55pm (folio 31287-46790-07824) — expediente SIL 2021/8507"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación (primer intento)",
+    "organo": "Pleno",
+    "fecha": "31/10/2024",
+    "resultado": "rechazada",
+    "total": {
+     "si": 60,
+     "no": 19,
+     "abst": 1
+    },
+    "bancadas": {
+     "FP": {
+      "si": 14,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 5,
+      "no": 1,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 1,
+      "no": 3,
+      "abst": 1
+     },
+     "BDP": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 2,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 31/10/2024 — expediente SIL 2021/8507. Sin corrección manual — el tablero es el resultado final. Requería mayoría absoluta por modificar leyes orgánicas (Carrera Judicial y Carrera Fiscal); no la alcanzó."
+   },
+   {
+    "tipo": "reconsideracion",
+    "etiqueta": "Reconsideración a la segunda votación rechazada",
+    "organo": "Pleno",
+    "fecha": "06/11/2024, 05:58pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 74,
+     "no": 30,
+     "abst": 3
+    },
+    "bancadas": {
+     "FP": {
+      "si": 18,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 9,
+      "no": 1,
+      "abst": 1
+     },
+     "PL": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 8,
+      "no": 1,
+      "abst": 0
+     },
+     "BM": {
+      "si": 0,
+      "no": 7,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 7,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 3,
+      "no": 1,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/11/2024, 05:58pm (folio 31297-46928-07940) — expediente SIL 2021/8507. Presentada por la congresista Tudela Gutiérrez; revierte el resultado de la segunda votación rechazada."
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación reabierta — la definitiva",
+    "organo": "Pleno",
+    "fecha": "06/11/2024, 06:02pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 78,
+     "no": 22,
+     "abst": 2
+    },
+    "bancadas": {
+     "FP": {
+      "si": 16,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 11,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 1,
+      "no": 4,
+      "abst": 0
+     },
+     "RP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 8,
+      "no": 1,
+      "abst": 0
+     },
+     "BM": {
+      "si": 6,
+      "no": 2,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 6,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 1,
+      "abst": 1
+     },
+     "HyD": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 06/11/2024, 06:02pm — expediente SIL 2021/8507. Esta es la votación que finalmente aprueba la ley."
+   }
+  ]
+ },
+ {
+  "id": "l32330",
+  "numero": "Ley N.º 32330",
+  "nombre": "Ley que incorpora a los adolescentes de 16 y 17 años como sujetos imputables dentro del Sistema Penal",
+  "fecha": "10/05/2025",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · declarada inconstitucional por el TC ocho meses después de su promulgación",
+  "promotorBancada": "Autor principal: Alejandro Muñante Barrios (Renovación Popular). Coautores: José Ernesto Cueto Aservi, Javier Rommel Padilla Romero, Miguel Ángel Ciccia Vásquez, Jorge Carlos Monto",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "17/10/2024, 07:19pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 56,
+     "no": 29,
+     "abst": 7
+    },
+    "bancadas": {
+     "FP": {
+      "si": 16,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 1,
+      "no": 6,
+      "abst": 0
+     },
+     "POD": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 3,
+      "abst": 4
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 1
+     },
+     "AP": {
+      "si": 5,
+      "no": 2,
+      "abst": 0
+     },
+     "BM": {
+      "si": 5,
+      "no": 1,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 5,
+      "no": 0,
+      "abst": 1
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "SP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 5,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "NA": {
+      "si": 1,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/10/2024, 07:19pm (folio 31291-46850-07878) — expediente SIL 2021/618"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "07/11/2024, 04:55pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 39,
+     "no": 22,
+     "abst": 19
+    },
+    "bancadas": {
+     "FP": {
+      "si": 9,
+      "no": 0,
+      "abst": 3
+     },
+     "APP": {
+      "si": 1,
+      "no": 6,
+      "abst": 0
+     },
+     "POD": {
+      "si": 6,
+      "no": 0,
+      "abst": 1
+     },
+     "PL": {
+      "si": 0,
+      "no": 1,
+      "abst": 7
+     },
+     "RP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 6,
+      "no": 0,
+      "abst": 1
+     },
+     "BM": {
+      "si": 3,
+      "no": 0,
+      "abst": 1
+     },
+     "AVP": {
+      "si": 0,
+      "no": 2,
+      "abst": 4
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "SP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 0,
+      "no": 3,
+      "abst": 1
+     },
+     "BDP": {
+      "si": 0,
+      "no": 4,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 07/11/2024, 04:55pm (folio 31299-46964-07973) — expediente SIL 2021/618"
+   }
+  ]
+ },
+ {
+  "id": "l32419",
+  "numero": "Ley N.º 32419",
+  "nombre": "Ley de amnistía a miembros de las FF.AA., PNP y comités de autodefensa por la lucha contra el terrorismo (1980–2000)",
+  "fecha": "14/08/2025",
+  "temas": [
+   "seg",
+   "jus"
+  ],
+  "dir": "debilita",
+  "periodoTxt": "Congreso 2021–2026 · promulgada por el Ejecutivo (gobierno Boluarte) el 13/08/2025 pese a medidas provisionales de la Corte IDH",
+  "promotorBancada": "Autor principal: Jorge Carlos Montoya Manrique (Renovación Popular al presentar el PL; para la votación de julio 2025 ya integraba Honor y Democracia). Coautores: María de los Mila",
+  "eventos": [
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Comisión Permanente",
+    "fecha": "09/07/2025",
+    "resultado": "aprobada",
+    "total": {
+     "si": 16,
+     "no": 11,
+     "abst": 0
+    },
+    "bancadas": {
+     "FP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "APP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 0,
+      "no": 3,
+      "abst": 0
+     },
+     "AP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "BM": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 0,
+      "no": 2,
+      "abst": 0
+     },
+     "BS": {
+      "si": 0,
+      "no": 1,
+      "abst": 0
+     },
+     "BDP": {
+      "si": 0,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "PDF oficial \"PL 7549 SEGUNDA VOTACIÓN\", Área de Relatoría y Agenda del Congreso, 09/07/2025 (V°B° Dávila — Relatoría/Actas, Abensur — Director General Parlamentario, Forno — Oficial Mayor). FP incluye a Juárez Gallegos (1.ª Vicepresidenta, Mesa Directiva); PL incluye a Cerrón Rojas (2.º Vicepresidente, Mesa Directiva)"
+   }
+  ]
+ },
+ {
+  "id": "univ2025",
+  "numero": "Ley N.º 32461",
+  "nombre": "Ley que crea veinte universidades nacionales en Amazonas, Apurímac, Arequipa, Ayacucho, Cusco, Huancavelica, Ica, Junín, Lambayeque, Lima, Moquegua, Puno, San Martín, La Libertad y Ucayali",
+  "fecha": "02/10/2025",
+  "temas": [
+   "edu"
+  ],
+  "dir": "ambiguo",
+  "periodoTxt": "Congreso 2021–2026 · observada por el Ejecutivo (gobierno Boluarte) y aprobada por insistencia; promulgada por el presidente del Congreso (J. Jerí)",
+  "promotorBancada": "PL 3002/2022-CR — uno de aproximadamente 30 proyectos acumulados (una universidad por proyecto). Autor principal: Segundo Toribio Montalvo Cubas (Perú Libre), quien también sustent",
+  "eventos": [
+   {
+    "tipo": "primera",
+    "etiqueta": "Primera votación (texto sustitutorio)",
+    "organo": "Pleno",
+    "fecha": "14/12/2024, 01:51am",
+    "resultado": "aprobada",
+    "total": {
+     "si": 50,
+     "no": 15,
+     "abst": 15
+    },
+    "bancadas": {
+     "FP": {
+      "si": 0,
+      "no": 12,
+      "abst": 0
+     },
+     "APP": {
+      "si": 2,
+      "no": 0,
+      "abst": 7
+     },
+     "POD": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 3,
+      "no": 0,
+      "abst": 3
+     },
+     "AP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 2,
+      "no": 2,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 0,
+      "no": 0,
+      "abst": 4
+     },
+     "BDP": {
+      "si": 1,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 1,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 14/12/2024, 01:51am (folio 31325-47369-08320) — expediente SIL 2022/3002"
+   },
+   {
+    "tipo": "segunda",
+    "etiqueta": "Segunda votación",
+    "organo": "Pleno",
+    "fecha": "19/03/2025, 07:59pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 60,
+     "no": 0,
+     "abst": 17
+    },
+    "bancadas": {
+     "FP": {
+      "si": 1,
+      "no": 0,
+      "abst": 15
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 0
+     },
+     "POD": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "RP": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "BM": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "JPVP": {
+      "si": 6,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 0,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "BS": {
+      "si": 4,
+      "no": 0,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 2,
+      "no": 0,
+      "abst": 1
+     },
+     "BDP": {
+      "si": 2,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 0,
+      "abst": 1
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 19/03/2025, 07:59pm (folio 31335-47541-08472) — expediente SIL 2022/3002. Durante la sesión se acumuló también el PL 8244 al texto sustitutorio."
+   },
+   {
+    "tipo": "insistencia",
+    "etiqueta": "Insistencia (autógrafa observada)",
+    "organo": "Pleno",
+    "fecha": "17/09/2025, 07:34pm",
+    "resultado": "aprobada",
+    "total": {
+     "si": 72,
+     "no": 5,
+     "abst": 29
+    },
+    "bancadas": {
+     "FP": {
+      "si": 1,
+      "no": 0,
+      "abst": 16
+     },
+     "APP": {
+      "si": 9,
+      "no": 0,
+      "abst": 6
+     },
+     "POD": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "PL": {
+      "si": 9,
+      "no": 0,
+      "abst": 1
+     },
+     "RP": {
+      "si": 7,
+      "no": 0,
+      "abst": 3
+     },
+     "JPVP": {
+      "si": 10,
+      "no": 0,
+      "abst": 0
+     },
+     "SP": {
+      "si": 7,
+      "no": 0,
+      "abst": 0
+     },
+     "AP": {
+      "si": 8,
+      "no": 0,
+      "abst": 0
+     },
+     "AVP": {
+      "si": 1,
+      "no": 3,
+      "abst": 0
+     },
+     "BS": {
+      "si": 5,
+      "no": 0,
+      "abst": 0
+     },
+     "HyD": {
+      "si": 0,
+      "no": 1,
+      "abst": 3
+     },
+     "BDP": {
+      "si": 3,
+      "no": 0,
+      "abst": 0
+     },
+     "NA": {
+      "si": 2,
+      "no": 1,
+      "abst": 0
+     }
+    },
+    "fuente": "Acta de \"Asistencia y Votación\" del Pleno, 17/09/2025, 07:34pm (folio 31411-48380-09178) — expediente SIL 2022/3002"
+   }
+  ]
+ }
+];
+// COMPOSICION — snapshots de escaños por bancada al inicio de cada legislatura.
+// Fuente: JNE (resolución de proclamación de resultados, distribución de escaños de origen).
+// IMPORTANTE — LIMITACIÓN DECLARADA: estos son los escaños DE ORIGEN (por lista electoral),
+// sin ajuste por transfuguismo. Para los Congresos con leyes en la muestra (2016-2021 y 2021-2026),
+// la composición real en la fecha exacta de cada votación puede diferir de esta — ese ajuste
+// (TRANSFUGUISMO) es la segunda pasada de este módulo, declarada como pendiente.
+// Para los Congresos 2001-2006 y 2011-2016 (Leyes 28094, 30077, 30220) aún no se cargó la
+// composición base — el módulo declara "Capa A pendiente" para esas normas, no se inventa.
+
+const COMPOSICION = {
+  '2016-2021': {
+    fuente: 'Resolución N.° 0660-2016-JNE (JNE), proclamación de resultados, distribución de escaños de origen — instalación 28/07/2016',
+    fechaInicio: '2016-07-28', fechaFin: '2021-07-26',
+    ajustadoPorTransfuguismo: false,
+    bancadas: [
+      {codigo:'FP', nombre:'Fuerza Popular', escanos:73},
+      {codigo:'FA', nombre:'Frente Amplio', escanos:20},
+      {codigo:'PPK', nombre:'Peruanos Por el Kambio', escanos:18},
+      {codigo:'APP', nombre:'Alianza para el Progreso', escanos:9},
+      {codigo:'AP', nombre:'Acción Popular', escanos:5},
+      {codigo:'AlPop', nombre:'Alianza Popular', escanos:5}
+    ]
+  },
+  '2021-2026': {
+    fuente: 'Resolución N.° 0602-2021-JNE (JNE), proclamación de resultados, distribución de escaños de origen — instalación 26/07/2021',
+    fechaInicio: '2021-07-26', fechaFin: '2026-07-26',
+    ajustadoPorTransfuguismo: false,
+    bancadas: [
+      {codigo:'PL', nombre:'Perú Libre', escanos:37},
+      {codigo:'FP', nombre:'Fuerza Popular', escanos:24},
+      {codigo:'AP', nombre:'Acción Popular', escanos:16},
+      {codigo:'APP', nombre:'Alianza para el Progreso', escanos:15},
+      {codigo:'RP', nombre:'Renovación Popular', escanos:13},
+      {codigo:'AVP', nombre:'Avanza País', escanos:7},
+      {codigo:'POD', nombre:'Podemos Perú', escanos:5},
+      {codigo:'JPP', nombre:'Juntos por el Perú', escanos:5},
+      {codigo:'SP', nombre:'Somos Perú', escanos:5},
+      {codigo:'PM', nombre:'Partido Morado', escanos:3}
+    ]
+  }
+};
+
+
+/* ===== MOTOR: transfuguismo (composición ajustada a fecha exacta de votación) ===== */
+// TRANSFUGUISMO — eventos de cambio de bancada con fecha documentada.
+// CRITERIO DE INCLUSIÓN: solo movimientos con fecha verificable en fuente citada — no se estima.
+// Fuentes: (1) Aragón, Cruz, Alcántara & Sánchez (2024), "Poder congresal en el Perú: un balance
+// a la mitad del periodo 2021-2026", Escuela de Gobierno y Políticas Públicas PUCP (cubre jul.2021–feb.2024);
+// (2) Gestión, "Congresistas renunciantes... forman nueva bancada Perú Democrático" (8/1/2022).
+// LIMITACIÓN DECLARADA: lista NO exhaustiva. El informe PUCP documenta más cambios pero sin precisión
+// de día en varios casos (solo mes o "a inicios/fines de") — se excluyen para no introducir estimaciones.
+// Ninguna fuente localizada hasta ahora cubre el periodo posterior a feb.2024: 16 de las 21 leyes de
+// la muestra 2021-2026 (todas fechadas jun.2024–oct.2025) quedan SIN ajuste por transfuguismo.
+const TRANSFUGUISMO = {
+  '2021-2026': [
+    {
+      fecha: '2021-07-26', tipo: 'fusion',
+      descripcion: 'Somos Perú y Partido Morado se unen en el grupo "Somos Perú – Partido Morado" (Partido Morado no alcanzaba el mínimo de 5 para bancada propia)',
+      absorbe: ['SP','PM'], resultado: {codigo:'SP-PM', nombre:'Somos Perú – Partido Morado'},
+      fuente: 'infocongresistasperu.pe; PUCP (2024) §1.1'
+    },
+    {
+      fecha: '2021-10-19', tipo: 'individual',
+      descripcion: 'Carlos Zeballos Madariaga renuncia a Acción Popular, pasa a No Agrupados',
+      de: 'AP', a: 'NA',
+      fuente: 'Gestión, 8/1/2022 ("Perú Democrático")'
+    }
+  ]
+};
+function composicionEnFecha(congresoKey, fechaISO, composicionBase){
+  const eventos = (TRANSFUGUISMO[congresoKey]||[]).filter(e => e.fecha <= fechaISO).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const mapa = {};
+  composicionBase.bancadas.forEach(b => mapa[b.codigo] = {codigo:b.codigo, nombre:b.nombre, escanos:b.escanos});
+  eventos.forEach(ev => {
+    if(ev.tipo === 'fusion'){
+      let total = 0;
+      ev.absorbe.forEach(codigo => { if(mapa[codigo]){ total += mapa[codigo].escanos; mapa[codigo].escanos = 0; } });
+      mapa[ev.resultado.codigo] = { codigo: ev.resultado.codigo, nombre: ev.resultado.nombre, escanos: total };
+    } else if(ev.tipo === 'individual'){
+      if(mapa[ev.de]) mapa[ev.de].escanos = Math.max(0, mapa[ev.de].escanos - 1);
+      if(!mapa[ev.a]) mapa[ev.a] = {codigo: ev.a, nombre: ev.a, escanos: 0};
+      mapa[ev.a].escanos += 1;
+    }
+  });
+  return Object.values(mapa).filter(b=>b.escanos>0);
+}
+function ultimaFechaCubierta(congresoKey){
+  const evs = TRANSFUGUISMO[congresoKey]||[];
+  return evs.length ? evs[evs.length-1].fecha : null;
+}
+// Última fecha con cobertura de fuente (no de nuestros eventos, sino del informe PUCP en general)
+const COBERTURA_TRANSFUGUISMO = { '2021-2026': '2024-02-28' };
+
+/* ===== MOTOR: Banzhaf ===== */
+function banzhaf(bancadas, umbral){
+  const n = bancadas.length;
+  const counts = new Array(n).fill(0);
+  let totalSwings = 0;
+  for(let mask=1; mask<(1<<n); mask++){
+    let sum=0;
+    for(let i=0;i<n;i++) if(mask&(1<<i)) sum += bancadas[i].escanos;
+    if(sum>=umbral){
+      for(let i=0;i<n;i++){
+        if(mask&(1<<i)){
+          const sinI = sum - bancadas[i].escanos;
+          if(sinI<umbral){ counts[i]++; totalSwings++; }
+        }
+      }
+    }
+  }
+  return bancadas.map((b,i)=>({...b, swingCount:counts[i], poder: totalSwings>0?counts[i]/totalSwings:0}));
+}
+
+/* ===== MOTOR: decisividad ===== */
+function signo(si,no){ return si>no?1:(si<no?-1:0); }
+function decisividadEvento(evento){
+  const bancadas = evento.bancadas || {};
+  const totalSi = evento.total ? evento.total.si : Object.values(bancadas).reduce((a,v)=>a+(v.si||0),0);
+  const totalNo = evento.total ? evento.total.no : Object.values(bancadas).reduce((a,v)=>a+(v.no||0),0);
+  const signoOriginal = signo(totalSi,totalNo);
+  const out = {};
+  for(const [b,v] of Object.entries(bancadas)){
+    const si_b=v.si||0, no_b=v.no||0;
+    const nuevoSi = totalSi - si_b + no_b;
+    const nuevoNo = totalNo - no_b + si_b;
+    out[b] = { votoOriginal: si_b>no_b?'favor':(si_b<no_b?'contra':'dividida'), decisiva: signo(nuevoSi,nuevoNo)!==signoOriginal };
+  }
+  return out;
+}
+
+/* ===== RENDER: Pantalla 1 ===== */
+// Diccionario código -> nombre completo. Mismo que observatorio-normativo-peru.html,
+// corregido (APP y SAU expandidos a nombre completo — antes abreviados).
+const P = {
+  FP:'Fuerza Popular', PL:'Perú Libre', APP:'Alianza para el Progreso', RP:'Renovación Popular',
+  AP:'Acción Popular', POD:'Podemos Perú', SP:'Somos Perú', AVP:'Avanza País',
+  BM:'Bloque Magisterial', HyD:'Honor y Democracia', PB:'Perú Bicentenario',
+  CDJP:'Cambio Democrático – Juntos por el Perú', UDP:'Unidad y Diálogo Parlamentario', NA:'No agrupados',
+  BS:'Bancada Socialista', JPVP:'Juntos por el Perú – Voces del Pueblo',
+  PD:'Perú Democrático', JP:'Juntos por el Perú', BDP:'Bloque Democrático Popular',
+  NGP:'Nacionalista Gana Perú', GPFP:'Fuerza Popular', PP:'Perú Posible', SN:'Solidaridad Nacional',
+  CP:'Concertación Parlamentaria', 'AP-FA':'Acción Popular – Frente Amplio', UR:'Unión Regional', NOAG:'No Agrupados',
+  PPK:'Peruanos por el Kambio', NP:'Nuevo Perú', FA:'Frente Amplio por Justicia, Vida y Libertad',
+  CPA:'Célula Parlamentaria Aprista', GPC:'Cambio 21', BL:'Bancada Liberal', UPR:'Unidos por la República',
+  PAP:'Partido Aprista Peruano', UN:'Unidad Nacional', FIM:'Frente Independiente Moralizador',
+  SAU:'Somos Perú – Acción Popular – Unión por el Perú (coalición)', GPDI:'Grupo Parlamentario Democrático Independiente',
+  PA:'Perú Ahora', AGC:'Alianza por el Gran Cambio', 'PPC-APP':'Partido Popular Cristiano – Alianza para el Progreso',
+  'SP-PM':'Somos Perú – Partido Morado', ID:'Integridad y Desarrollo', AlPop:'Alianza Popular'
+};
+// completar con los nombres ya definidos en COMPOSICION por si algún código nuevo aparece ahí
+Object.values(COMPOSICION).forEach(c=>c.bancadas.forEach(b=>{ if(!P[b.codigo]) P[b.codigo]=b.nombre; }));
+
+let congActivo = '2021-2026';
+function renderCongSelect(){
+  const el = document.getElementById('congSelect');
+  el.innerHTML = Object.keys(COMPOSICION).map(k=>
+    `<div class="cong-btn ${k===congActivo?'active':''}" data-c="${k}">Congreso ${k}</div>`
+  ).join('');
+  el.querySelectorAll('.cong-btn').forEach(b=>b.addEventListener('click',()=>{congActivo=b.dataset.c;renderCongreso();}));
+}
+function renderCongreso(){
+  renderCongSelect();
+  const c = COMPOSICION[congActivo];
+  const totalEsc = c.bancadas.reduce((a,b)=>a+b.escanos,0);
+  const umbral = Math.floor(totalEsc/2)+1;
+  const conPoder = banzhaf(c.bancadas, umbral).sort((a,b)=>b.poder-a.poder);
+  document.getElementById('bancadasList').innerHTML = conPoder.map(b=>{
+    const pctEsc = (b.escanos/totalEsc*100);
+    const pctPoder = (b.poder*100);
+    return `<div class="bancada-row">
+      <div class="bancada-nombre">${b.nombre}<b>${b.codigo} · ${b.escanos} escaños</b></div>
+      <div class="bar-compare">
+        <div class="bar-track"><div class="bar-fill escanos" style="width:${pctEsc}%"></div></div>
+        <div class="bar-track"><div class="bar-fill poder" style="width:${pctPoder}%"></div></div>
+      </div>
+      <div class="bancada-pct">${pctEsc.toFixed(1)}%<br>${pctPoder.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+  document.getElementById('congFuente').textContent = 'Fuente: ' + c.fuente + ' · Umbral de mayoría simple usado: ' + umbral + ' de ' + totalEsc + ' escaños.';
+}
+
+/* ===== RENDER: Pantalla 2 ===== */
+const T = {dem:'Democracia/electoral',seg:'Seguridad',jus:'Justicia',reg:'Reguladores',edu:'Educación'};
+const state2 = { temas: new Set(), soloMayoritariaDecisiva: false };
+
+function temaEl(){
+  return Object.entries(T).map(([k,v])=>`<div class="chip" data-t="${k}">${v}</div>`).join('');
+}
+// Alias de código de bancada: mismo partido, código distinto usado en la tabla de una votación puntual.
+// Verificado caso por caso, no es una regla general — cada alias nuevo debe confirmarse contra la fuente.
+const ALIAS_BANCADA = { GPFP: 'FP' };
+function calcParaCodigo(calc, codigo){
+  if(calc[codigo]) return calc[codigo];
+  const aliasKey = Object.keys(ALIAS_BANCADA).find(k => ALIAS_BANCADA[k] === codigo);
+  if(aliasKey && calc[aliasKey]) return calc[aliasKey];
+  return null;
+}
+
+function decisivaDeLey(ley){
+  if(!ley.eventos || !ley.eventos.length) return null;
+  const decisiva = ley.eventos[ley.eventos.length-1];
+  if(!decisiva.bancadas || !Object.keys(decisiva.bancadas).length) return null;
+  return { evento: decisiva, calc: decisividadEvento(decisiva) };
+}
+function congresoDeLaLey(ley){
+  const fISO = fechaISO(ley);
+  if(!fISO) return null;
+  // Clasificación por fecha exacta de instalación de cada Congreso (JNE), no por texto de periodoTxt
+  // (bug corregido: "Congreso 2016–2021" también contiene la subcadena "2021").
+  if(fISO >= '2016-07-28' && fISO < '2021-07-26') return '2016-2021';
+  if(fISO >= '2021-07-26' && fISO < '2026-07-26') return '2021-2026';
+  return null;
+}
+function fechaISO(ley){
+  // ley.fecha viene como DD/MM/AAAA
+  const p = (ley.fecha||'').split('/');
+  return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
+}
+function composicionAjustadaDeLaLey(ley){
+  const key = congresoDeLaLey(ley);
+  if(!key || !COMPOSICION[key]) return null;
+  const fISO = fechaISO(ley);
+  const cobertura = COBERTURA_TRANSFUGUISMO[key];
+  const dentroDeCobertura = !cobertura || !fISO || fISO <= cobertura;
+  const bancadas = fISO ? composicionEnFecha(key, fISO, COMPOSICION[key]) : COMPOSICION[key].bancadas;
+  return { key, bancadas, dentroDeCobertura, fISO, cobertura };
+}
+function bancadaMayorEnCongresoDeLaLey(ley){
+  const c = composicionAjustadaDeLaLey(ley);
+  if(!c) return null;
+  const ordenadas = c.bancadas.slice().sort((a,b)=>b.escanos-a.escanos);
+  return ordenadas[0].codigo;
+}
+function fichaHTML(ley){
+  const d = decisivaDeLey(ley);
+  const dirClass = ley.dir==='debilita'?'dir-d':ley.dir==='fortalece'?'dir-f':'dir-a';
+  const dirLabel = ley.dir==='debilita'?'▼ debilita':ley.dir==='fortalece'?'▲ fortalece':'◆ ambiguo';
+  let body;
+  if(!d){
+    body = `<div class="no-tabla">Sin tabla de votación por bancada verificada todavía — no se calcula decisividad para esta norma.</div>`;
+  } else {
+    const rows = Object.entries(d.calc).map(([b,v])=>{
+      const nombre = P[b]||b;
+      return `<div class="badge-row">
+        <div class="bn">${nombre} (${b})</div>
+        <div><span class="badge ${v.votoOriginal==='favor'?'si':(v.votoOriginal==='contra'?'no':'pend')}">${v.votoOriginal}</span></div>
+        <div class="${v.decisiva?'decisiva-yes':'decisiva-no'}">${v.decisiva?'✓ decisiva en esta votación':'no decisiva'}</div>
+      </div>`;
+    }).join('');
+    const c = composicionAjustadaDeLaLey(ley);
+    let notaComposicion = '';
+    if(c){
+      if(c.dentroDeCobertura && c.fISO && TRANSFUGUISMO[c.key] && TRANSFUGUISMO[c.key].some(e=>e.fecha<=c.fISO)){
+        notaComposicion = `<div style="font-size:11px;color:var(--ok);margin-bottom:8px">✓ Poder estructural calculado con composición AJUSTADA por transfuguismo a la fecha de esta votación (fuente cubre hasta ${c.cobertura}).</div>`;
+      } else if(!c.dentroDeCobertura){
+        notaComposicion = `<div style="font-size:11px;color:var(--warn);margin-bottom:8px">⚠ Esta votación es posterior al periodo cubierto por la fuente de transfuguismo (hasta ${c.cobertura}). El poder estructural mostrado usa composición DE ORIGEN, sin ajustar — puede no reflejar la composición real en esta fecha.</div>`;
+      }
+    }
+    body = `<div style="font-size:12px;color:var(--ink-2);margin:10px 0 4px">${d.evento.etiqueta||''}${d.evento.fecha?' · '+d.evento.fecha:''} — ${(d.evento.resultado||'').toUpperCase()}</div>${notaComposicion}${rows}
+      <a class="link-back" href="observatorio-normativo-peru.html#${ley.id}">Ver ficha completa en el observatorio →</a>`;
+  }
+  return `<article class="ficha" data-id="${ley.id}">
+    <div class="f-head">
+      <div>
+        <div class="f-num">${ley.numero}</div>
+        <div class="f-title">${ley.nombre}</div>
+        <div class="f-badges">
+          <span class="tag ${dirClass}">${dirLabel}</span>
+          <span class="tag">${ley.fecha}</span>
+        </div>
+      </div>
+      <div class="f-toggle">+</div>
+    </div>
+    <div class="f-body">${body}</div>
+  </article>`;
+}
+function applyNorma(){
+  let shown = 0;
+  const html = LEYES.filter(ley=>{
+    if(state2.temas.size && !ley.temas.some(t=>state2.temas.has(t))) return false;
+    if(state2.soloMayoritariaDecisiva){
+      const d = decisivaDeLey(ley);
+      const mayor = bancadaMayorEnCongresoDeLaLey(ley);
+      const c = d ? calcParaCodigo(d.calc, mayor) : null;
+      if(!d || !mayor || !c || !c.decisiva) return false;
+    }
+    return true;
+  }).map(l=>{shown++;return fichaHTML(l);}).join('');
+  document.getElementById('normaList').innerHTML = html;
+  document.getElementById('normaEmpty').style.display = shown?'none':'block';
+}
+function renderNorma(){
+  document.getElementById('temaFilters').innerHTML = temaEl();
+  document.getElementById('decisivaFilter').innerHTML = `<div class="chip" id="chipMayoria">Solo normas donde la bancada mayoritaria/pluralidad fue decisiva</div>`;
+  document.querySelectorAll('#temaFilters .chip').forEach(c=>c.addEventListener('click',()=>{
+    const t=c.dataset.t;
+    if(state2.temas.has(t)) state2.temas.delete(t); else state2.temas.add(t);
+    c.classList.toggle('on');
+    applyNorma();
+  }));
+  document.getElementById('chipMayoria').addEventListener('click',(e)=>{
+    state2.soloMayoritariaDecisiva = !state2.soloMayoritariaDecisiva;
+    e.target.classList.toggle('on');
+    applyNorma();
+  });
+  applyNorma();
+  document.getElementById('normaList').addEventListener('click',(e)=>{
+    const head = e.target.closest('.f-head');
+    if(!head) return;
+    head.closest('.ficha').classList.toggle('open');
+  });
+}
+
+/* ===== Tabs ===== */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('screen-'+t.dataset.screen).classList.add('active');
+}));
+
+function renderTransfListado(){
+  const el = document.getElementById('transfListado');
+  if(!el) return;
+  const eventos = TRANSFUGUISMO['2021-2026']||[];
+  if(!eventos.length){ el.innerHTML = '<div style="font-size:12.5px;color:var(--ink-2)">Sin eventos cargados todavía.</div>'; return; }
+  el.innerHTML = eventos.map(ev=>`
+    <div style="padding:8px 0;border-bottom:1px dotted var(--line);font-size:12.5px">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--sello)">${ev.fecha}</div>
+      <div style="margin:3px 0">${ev.descripcion}</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--ink-2)">Fuente: ${ev.fuente}</div>
+    </div>`).join('') +
+    `<div style="font-size:11px;color:var(--ink-2);margin-top:10px">Cobertura de la fuente principal (PUCP): hasta ${COBERTURA_TRANSFUGUISMO['2021-2026']}. Movimientos posteriores o sin precisión de día no están incluidos — ver limitación arriba.</div>`;
+}
+
+renderCongreso();
+renderNorma();
+renderTransfListado();
+</script>
+</body>
+</html>
